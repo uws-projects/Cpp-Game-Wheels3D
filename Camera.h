@@ -1,7 +1,7 @@
 #pragma once
 #include "Object.h"
 
-#define DEGREES 0.017453293
+#define DEGREES 0.017453293f
 
 class Camera: 
 	public Object

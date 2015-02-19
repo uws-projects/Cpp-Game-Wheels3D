@@ -64,7 +64,7 @@ void Application::Update()
 	SDL_ShowCursor(false);
 	m_stateMachine->Update();
 	
-	SDL_WarpMouseInWindow(window, (int) XCENTRE, (int) YCENTRE);
+//	SDL_WarpMouseInWindow(window, (int) XCENTRE, (int) YCENTRE);
 }
 
 void Application::Render()

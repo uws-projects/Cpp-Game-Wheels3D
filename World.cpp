@@ -4,7 +4,7 @@ World::World()
 {
 }
 
-const int NUMBEROFOBJECTS = 16;
+const int NUMBEROFOBJECTS = 17;
 
 void World::Initialize()
 {
@@ -29,6 +29,8 @@ void World::Initialize()
 	right.position = glm::vec4(295.0f, 1000.0f, 325.0f, 1.0f);
 	up.position = glm::vec4(-105.0f, 1000.0f, 325.0f, 1.0f);
 	left.position = glm::vec4(295.0f, 1000.0f, -75.0f, 1.0f);
+
+	std::cin;
 }
 
 bool enabled = true;

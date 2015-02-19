@@ -2,7 +2,6 @@
 #include "Object.h"
 #include "Camera.h"
 
-#define DEGREES 0.017453293
 #define KG 1.0f
 #define S 0.01666666666f
 #define M 1.0f;

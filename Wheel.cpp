@@ -57,7 +57,7 @@ void Wheel::Render()
 		Shader::SetUniform("MVP", Shader::ProjectionMatrix()*Shader::Top());
 		// TO DO
 		// when texture coordinates will be created bind this
-		//Shader::Bind(0, "tex", rubber);
+		Shader::Bind(0, "tex", rubber);
 		glBindVertexArray(model);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
