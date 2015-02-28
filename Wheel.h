@@ -30,6 +30,7 @@ public:
 	glm::vec3& Scale()		{ return scale; };
 	GLuint& Model()			{ return model; };
 	unsigned int &Index()	{ return indexCount; };
+	float Radius()			{ return RADIUS; }
 
 	~Wheel();
 
@@ -51,8 +52,8 @@ private:
 		
 	
 	const float Cdrag = 0.9f;	// drag coefficient
-	const float Crolling = Cdrag * 30.0f; // rolling coefficient
-	const float Cbraking = 0.5f;
+	const float Crolling = Cdrag * 10.0f; // rolling coefficient
+	const float Cbraking = 1.0f;
 	
 	const float RHOAIR = 1.29f; // density of air
 	const float DT = 0.016f;
@@ -100,6 +101,9 @@ private:
 
 	Camera firstPersonCamera;
 	
+	int trackSection;
+
+	void checkTrack(int &section);
 	void checkCollision();
 	void initializePhysics();
 	void updatePhysics();

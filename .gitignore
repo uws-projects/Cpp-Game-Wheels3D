@@ -2,6 +2,18 @@
 *.slo
 *.lo
 *.o
+*.obj
+*.tlog
+*.idb
+*.pdb
+*.ilk
+*.log
+*.db
+*.sdf
+
+# Sketchup Material files
+*.mtl
+
 
 # Precompiled Headers
 *.gch
@@ -10,6 +22,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
+*.dll
 
 # Fortran module files
 *.mod
@@ -18,6 +31,7 @@
 *.lai
 *.la
 *.a
+*.lib
 
 # Executables
 *.exe

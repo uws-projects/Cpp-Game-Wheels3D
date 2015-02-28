@@ -9,18 +9,22 @@ void Wheel::Initialize()
 {
 	firstPersonCamera.Initialize();
 	model = Load::Obj(".\\model\\wheels_ultimul.obj");
+	//model = Load::Obj(".\\model\\world\\wheel.model");
 	indexCount = Load::meshCount();
 	material.Ka = glm::vec4(0.0, 0.0, 0.0, 1.0);
-	material.Kd = glm::vec4(0.7, 0.7, 0.7, 1.0);
+	material.Kd = glm::vec4(0.649020f, 0.837255f, 0.717647f, 1.0);
 	material.Ks = glm::vec4(0.33, 0.33, 0.33, 1.0);
-	material.shininess = 0.66f;
+	material.shininess = 0.5f;
 
-	direction = 90;
-	rotationAngle = 50;
+	light.position = glm::vec4(position, 1.0f);
+
+	trackSection = 0;
+	direction = 0;
+	rotationAngle = 0;
 	Acceleration = 0;
-	rubber = Load::BMP(".\\textures\\rubber.bmp");
+	rubber = Load::BMP(".\\model\\world\\wheel\\texture.bmp");
 	scale = glm::vec3(1.0f);
-	position = glm::vec3(5.0f, RADIUS - tyreAspectRatio, 5.0f);
+	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f);
 	lastPosition = position;
 
 	cameraHeight = position.y*2.5f;
@@ -31,13 +35,8 @@ void Wheel::Initialize()
 
 	initializePhysics();
 
-	leftCollisionMap = Load::CollisionMap(".\\contact\\leftMap.obj");
-	rightCollisionMap= Load::CollisionMap(".\\contact\\rightMap.obj");
-
 	glEnable(GL_CULL_FACE);
 }
-
-
 
 void Wheel::Render()
 {
@@ -45,7 +44,11 @@ void Wheel::Render()
 	Shader::Push();
 	{
 		glEnable(GL_DEPTH_TEST);
-		glCullFace(GL_BACK);
+		glCullFace(GL_FRONT);
+		Shader::Use(Shader::Bump());
+		Shader::AddLight(light);
+		Shader::AddMaterial(material);
+		
 		Shader::Top() = glm::translate(Shader::Top(), position);
 		Shader::Top() = glm::rotate(Shader::Top(), -direction, glm::vec3(0.0f, 1.0f, 0.0f));
 		Shader::Top() = glm::rotate(Shader::Top(), rotationAngle, glm::vec3(1.0f, 0.0f, 0.0f));
@@ -55,84 +58,18 @@ void Wheel::Render()
 		Shader::SetUniform("NormalMatrix", Shader::NormalMatrix());
 		Shader::SetUniform("ProjectionMatrix", Shader::ProjectionMatrix());
 		Shader::SetUniform("MVP", Shader::ProjectionMatrix()*Shader::Top());
+		Shader::SetUniform("attConst", 1.0f);
+		Shader::SetUniform("attLinear", 0.0f);
+		Shader::SetUniform("attQuadratic", 0.0f);
 		// TO DO
 		// when texture coordinates will be created bind this
 		Shader::Bind(0, "tex", rubber);
 		glBindVertexArray(model);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
-	
+		glDisable(GL_CULL_FACE);
 	}
 	Shader::Pop();
-}
-
-bool Wheel::contacts(float& left, float& right, float& top, float &bottom, float& x, float &z) {
-
-	// if is outside the box... then no collision
-	if (x<left - RADIUS)		return false;
-	if (x>right + RADIUS)		return false;
-	if (z>bottom + RADIUS)		return false;
-	if (z<top - RADIUS)			return false;
-
-	std::cout << "contact at X: "<< x << " Z: "<< z << "\n";
-	std::cout << "\n left:" << left << "\tright :" << right << "\ttop :" << top << "\tbottom :" << bottom <<"\n";
-	glm::vec3 response = glm::vec3(x, RADIUS, z) - lastPosition;
-
-	if (lastPosition.x < left || lastPosition.x > right)
-	{
-		response.x *= -1;
-	}
-	if (lastPosition.z < bottom || lastPosition.z > top)
-	{
-		response.z *= -1; 
-	}
-
-
-	response = glm::normalize(response);
-
-	position.x += response.x;
-	position.z += response.z;
-	
-	return true;
-}
-
-void Wheel::checkCollision()
-{
-	if (position.z < 130.0f)
-		// left map is from 0 to 130 on Z axis
-	{
-		for (unsigned int i = 0; i < leftCollisionMap.size() - 1; i += 4)
-			// so read the coordinates of the two points, so two pairs of x,y 
-			// that`s why we increase by 4 at each step
-		{
-			// check for collision between the rectangle described by the 2 points
-			// they are already sorted from the loading function
-			// and check against the current position of the player
-			contacts(leftCollisionMap[i],
-				leftCollisionMap[i + 1],
-				leftCollisionMap[i + 2],
-				leftCollisionMap[i + 3],
-				position.x,
-				position.z);
-		}
-	}
-	else
-	{
-		for (unsigned int i = 0; i < rightCollisionMap.size() - 1; i += 4)
-			// so read the coordinates of the two points, so two pairs of x,y 
-			// that`s why we increase by 4 at each step
-		{
-			// check for collision between the rectangle described by the 2 points
-			// they are already sorted from the loading function
-			// and check against the current position of the player
-			contacts(rightCollisionMap[i],
-				rightCollisionMap[i + 1],
-				rightCollisionMap[i + 2],
-				rightCollisionMap[i + 3],
-				position.x,
-				position.z);
-		}
-	}
 }
 
 glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d, GLfloat rotation) {
@@ -141,30 +78,236 @@ glm::vec3 moveForward(glm::vec3 pos, GLfloat angle, GLfloat d, GLfloat rotation)
 
 void Wheel::gearUp()
 {
-	if (currentGear < 6) currentGear++;
+	if (currentGear == REVERSE)
+		currentGear = NEUTRAL;
+	else if (currentGear < 6) currentGear++;
 }
 
 void Wheel::gearDown()
 {
-	if (currentGear > 1) currentGear--;
+	if (currentGear != REVERSE) {
+		if (currentGear == NEUTRAL)
+			currentGear = REVERSE;
+		else if (currentGear > 0) currentGear--;
+	}
+}
+
+void Wheel::checkTrack(int& section) {
+	float velocityPenalty = 0.95f;
+	switch (section)
+	{
+	case 0: {
+				if (position.x < 35.9921f + RADIUS) { position.x = 35.9921f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.x > 38.4921f - RADIUS) { position.x = 38.4921f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.z < 4.73671f) { section = 31; }
+				if (position.z > 104.737f) { section = 1; }
+	} break;
+	case 1: {				
+				if (position.z > 108.237f - RADIUS) { position.z = 108.237f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x > 38.4921f - RADIUS) { position.x = 38.4921f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.z < 104.737f) { section = 0; }
+				if (position.x < 35.9921f) { section = 2; }
+	} break;
+	case 2: {
+				if (position.z < 104.737f + RADIUS) { position.z = 104.737f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z > 108.237f - RADIUS)	{ position.z = 108.237f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 2.99211f) { section = 3; }
+				if (position.x > 35.9921f) { section = 1; }
+	} break;
+	case 3: {
+				if (position.z < 104.737f + RADIUS) { position.z = 104.737f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z > 108.237f) { section = 4; }
+				if (position.x > 2.99211f) { section = 2; }
+	} break;
+	case 4: {
+				if (position.x > 2.99211f - RADIUS) { position.x = 2.99211f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z < 108.237f) { section = 3; }
+				if (position.z > 158.237f) { section = 5; }
+	} break;
+	case 5: {
+				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x > 2.99211f) { section = 6; }
+				if (position.z < 158.237f) { section = 4; }
+	} break;
+	case 6: {
+				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.z < 158.237f + RADIUS) { position.z = 158.237f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 2.99211f) { section = 5; }
+				if (position.x > 44.9921f) { section = 7; }
+	} break;
+	case 7: {
+				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x > 49.4921f - RADIUS) { position.x = 49.4921f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 44.9921f) { section = 6; }
+				if (position.z < 158.237f) { section = 8; }
+	} break;
+	case 8: {
+				if (position.x > 49.4921f - RADIUS) { position.x = 49.4921f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 44.9921f + RADIUS) { position.x = 44.9921f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z > 158.237f) { section = 7; }
+				if (position.z < 152.237f) { section = 9; }
+	} break;
+	case 9: {
+				if (position.x < 44.9921f + RADIUS) { position.x = 44.9921f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; }
+				if (position.x > 49.4921f) { section = 10; }
+				if (position.z > 152.237f) { section = 8; }
+	} break;
+	case 10: {
+				 if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 152.237f - RADIUS) { position.z = 152.237f - RADIUS; Velocity *= velocityPenalty; }
+				if (position.x < 49.4921f) { section = 9; }
+				if (position.x > 66.4921f) { section = 11; }
+	} break;
+	case 11: {
+				 if (position.z > 152.237f - RADIUS) { position.z = 152.237f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 66.4921f) { section = 10; }
+				 if (position.z < 144.737f) { section = 12; }
+
+	} break;
+	case 12: {
+				 if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 144.737f) { section = 11; }
+				 if (position.z < 111.737f) { section = 13; }
+	} break;
+	case 13: {
+				 if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 111.737f) { section = 12; }
+				 if (position.x > 68.9921f) { section = 14; }
+	} break;
+	case 14: {
+				 if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 68.9921f) { section = 13; }
+				 if (position.x > 126.992f) { section = 15; }
+	} break;
+	case 15: {
+				 if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 126.992f) { section = 14; }
+				 if (position.z < 109.237f) { section = 16; }
+	} break;
+	case 16: {
+				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 126.992f + RADIUS) { position.x = 126.992f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 109.237f) { section = 15; }
+				 if (position.z < 90.2367f) { section = 17; }
+	} break; 
+	case 17: {
+				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 90.2367f) { section = 16; }
+				 if (position.x < 126.992f) { section = 18; }
+	} break;
+	case 18: {
+				 if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 126.992f) { section = 17; }
+				 if (position.x < 90.9921f) { section = 19; }
+	} break;
+	case 19: {
+				 if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 90.9921f) { section = 18; }
+				 if (position.z < 87.7367f) { section = 20; }
+	} break;
+	case 20: {
+				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 90.9921f - RADIUS) { position.x = 90.9921f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 87.7367f) { section = 19; }
+				 if (position.z < 65.7367f) { section = 21; }
+	} break;
+	case 21: {
+				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 65.7367f) { section = 20; }
+				 if (position.x > 90.9921f) { section = 22; }
+	} break;
+	case 22: {
+				 if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 90.9921f) { section = 21; }
+				 if (position.x > 140.992f) { section = 23; }
+	} break;
+	case 23: {
+				 if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 140.992f) { section = 22; }
+				 if (position.z < 63.2367f) { section = 24; }
+	} break;
+	case 24: {
+				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 140.992f + RADIUS) { position.x = 140.992f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 63.2367f) { section = 23; }
+				 if (position.z < 10.2367f) { section = 25; }
+	} break;
+	case 25: {
+				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 10.2367f) { section = 24; }
+				 if (position.x < 140.992f) { section = 26; }
+	} break;
+	case 26: {
+				 if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 140.992f) { section = 25; }
+				 if (position.x < 93.9921f) { section = 27; }
+	} break;
+	case 27: {
+				 if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 93.9921f) { section = 26; }
+				 if (position.z < 5.73671f) { section = 28; }
+	} break;
+	case 28: {
+				 if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 5.73671f) { section = 27; }
+				 if (position.z < 4.73671f) { section = 29; }
+	} break;
+	case 29: {
+				 if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 4.73671f) { section = 28; }
+				 if (position.x < 91.4921f) { section = 30; }
+	} break;
+	case 30: {
+				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.z > 4.73671f - RADIUS) { position.z = 4.73671f - RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 91.4921f) { section = 29; }
+				 if (position.x < 38.4921f) { section = 31; }
+	} break;
+	case 31: {
+				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x < 35.9921f + RADIUS) { position.x = 35.9921f + RADIUS; Velocity *= velocityPenalty; }
+				 if (position.x > 38.4921f) { section = 30; }
+				 if (position.z > 4.73671f) { section = 0; }
+	} break;
+	default: 
+		break;
+	}
 }
 
 void Wheel::Update()
 {
-	rotationAngle += Velocity / 2 * PI;
-	if (rotationAngle > 360) rotationAngle -= 360;
-	
-	if (position.z < RADIUS)	{ position.z = RADIUS; }
-	if (position.z > 250.0f - RADIUS) { position.z = 250.0f - RADIUS; }
-	if (position.x < RADIUS)	{ position.x = RADIUS; }
-	if (position.x > 190.0f - RADIUS) { position.x = 190.0f - RADIUS; }
-
-	checkCollision();
+	// comment next line to disable collisions
+	checkTrack(trackSection);
+	if (currentGear == 6 && Velocity < 17) currentGear = 5;
+	if (currentGear == 5 && Velocity < 14) currentGear = 4;
+	if (currentGear == 4 && Velocity < 11) currentGear = 3;
+	if (currentGear == 3 && Velocity < 6) currentGear = 2;
+	if (currentGear == 2 && Velocity < 3) currentGear = 1;
 }
 
 void Wheel::initializePhysics()
 {
-	currentGear = 1;
+	currentGear = NEUTRAL;
 	Velocity = 0.0f;
 	Acceleration = 0.0f;
 	F_traction = 0.0f;
@@ -176,51 +319,83 @@ void Wheel::initializePhysics()
 	EnginePower = 0.0f;
 	Trigger = 0.0f; 
 
+	gears[0] = 0.00f;
+	gears[1] = 0.50f;
+	gears[2] = 0.80f;
+	gears[3] = 1.05f;
+	gears[4] = 1.46f;
+	gears[5] = 1.70f;
+	gears[6] = 1.82f;
+	gears[7] = 0.50f;
 	canGearDown = true;
 	canGearUp = true;
 }
 
 void Wheel::updatePhysics()
 {
+	// TO DO: cleanup and tweak
+	if (rotationAngle > 360) rotationAngle -= 360;
+
 	// clamp direction between 0 and 360 degrees
 	if (direction > 360) direction -= 360;
 	if (direction < -360) direction += 360;
 
 	// calculate resistance forces
-	F_drag = -Cdrag * 0.5f * AREA * RHOAIR * Velocity * Velocity;
+	F_drag = -Cdrag * 0.5f * AREA * RHOAIR * Velocity;
 	F_rr = -Crolling * Velocity;
 	float F_resistance = F_drag + F_rr;
+	float revolutions = Velocity / 2 * PI;
+	if (abs(F_long) < 0.4f) F_long = 0.0f;
 
-	// calculate traction force
-	F_traction = u * EnginePower * currentGear;
-	
-	// calculate longitudinal force when braking or not
-	if (EnginePower < 0) 
-	{
-		F_braking = -u * Cbraking * abs(EnginePower);
-		F_long = F_braking + F_resistance;
-	}
-	else 
-	{
-		F_long = F_traction + F_resistance;
-	}
+	Acceleration = F_long / MASS;
+	Velocity = Velocity + Acceleration * DT;
 
-	// if the longitudinal force is too close to 0, make it 0	
-	if (abs(F_long) < 0.5f) F_long = 0.0f;
-	
-	Acceleration = F_long / MASS; 
-	Velocity = Velocity +  Acceleration * DT ;
-	
 	// if the velocity is too close to 0, make it 0
-	if (abs(Velocity) < 0.04) Velocity = 0.0f;
+	if (abs(Velocity) < 0.082) {
+		Velocity = 0.0f; 
+	}
+
+	if (currentGear == REVERSE) {
+		u = -1;
+		if (EnginePower < 0)
+		{
+			int brake = abs(EnginePower);
+			if (brake > 80) { revolutions = 0; }
+			F_braking = -u * Cbraking * brake;
+			F_long = F_braking + F_resistance;
+		}
+		else
+			F_traction = u * EnginePower * gears[currentGear];
+	}
+	else {
+		u = 1;
+	}
+	if (currentGear != NEUTRAL) {
+		// calculate longitudinal force when braking or not
+		if (EnginePower < 0)
+		{
+			int brake = abs(EnginePower);
+			if (brake > 80) { revolutions = 0; }
+			F_braking = -u * Cbraking * brake;
+			F_long = F_braking + F_resistance;
+		}
+		else
+		{
+			// calculate traction force
+			F_traction = u * EnginePower * gears[currentGear];
+
+			F_long = F_traction + F_resistance;
+		}
+	}
+	rotationAngle += revolutions;
 
 	// report section, uncomment as necessary
-	std::cout << "\nF_long: " << F_long;
-	std::cout << "\nAcceleration : " << Acceleration;
+	//std::cout << "\nF_long: " << F_long;
+	//std::cout << "\nAcceleration : " << Acceleration;
 	//std::cout << "\nF_traction: " << F_traction;
 	//std::cout << "\nEngine Power: " << EnginePower;
-	std::cout << "\nVelocity : " << Velocity;
-	std::cout << "\nCurrent Gear: " << currentGear;
+	//std::cout << "\nGear: " << currentGear << " Velocity : " << Velocity;
+
 	
 }
 
@@ -230,9 +405,9 @@ void Wheel::HandleEvents()
 	if (JOY->JoysticksInitialised())
 	{
 
-		float RightStickXvalue = (JOY->xValue(JOYSTICK1, RIGHTSTICK)) / 364 + 19.23123f;
-		float RightStickYvalue = (JOY->yValue(JOYSTICK1, RIGHTSTICK)) / 364 + 19.23123f;
-		float LeftStickXValue = (JOY->xValue(JOYSTICK1, LEFTSTICK)) / 364 + 19.23123f;
+		float RightStickXvalue = (JOY->xValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
+		float RightStickYvalue = (JOY->yValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
+		float LeftStickXValue = (JOY->xValue(JOYSTICK1, LEFTSTICK)) / 364 + 15.23123f;
 
 		// record trigger values and invert axis 
 		/* by default the right trigger returns negative values 
@@ -248,7 +423,6 @@ void Wheel::HandleEvents()
 		float toAdd = (LeftStickXValue / 50.0f);// *(1.1f + Velocity*0.8f);
 
 		if (LeftStickXValue > 15.0f || LeftStickXValue < -15.0f) direction += toAdd;
-		std::cout << "\n" << LeftStickXValue;
 		
 		// gear up on release of RB
 		if (canGearUp)
@@ -277,14 +451,14 @@ void Wheel::HandleEvents()
 		if (JOY_SELECT)
 		{
 			editingCameraPosition = !editingCameraPosition;
-			SDL_Delay(150);
+			SDL_Delay(50);
 		}
 
 		// pressing start enables fast zoom
 		if (JOY_START)
 		{
 			hugeZoom = !hugeZoom;
-			SDL_Delay(150);
+			SDL_Delay(50);
 			if (hugeZoom) zoomAmount = 1.0f;
 			else zoomAmount = 0.1f;
 		}
@@ -302,8 +476,8 @@ void Wheel::HandleEvents()
 		// movement
 		if (PRESSING(SDL_SCANCODE_W)) if (EnginePower < 100)  EnginePower+=2.0f; 
 		if (PRESSING(SDL_SCANCODE_S)) if (EnginePower > -100) EnginePower-=2.0f;
-		if (PRESSING(SDL_SCANCODE_D)) direction++; 
-		if (PRESSING(SDL_SCANCODE_A)) direction--;
+		if (PRESSING(SDL_SCANCODE_D)) direction+=2; 
+		if (PRESSING(SDL_SCANCODE_A)) direction-=2;
 
 		// gear shifting 
 		// manual
@@ -316,10 +490,6 @@ void Wheel::HandleEvents()
 		// automatic
 		if (PRESSING(SDL_SCANCODE_Q)) gearDown();
 		if (PRESSING(SDL_SCANCODE_E)) gearUp();
-
-		updatePhysics();
-		position.x += Velocity * -std::sin(direction*DEGREES) * DT;
-		position.z += Velocity * std::cos(direction*DEGREES) * DT;
 	}
 
 	updatePhysics();
@@ -329,10 +499,9 @@ void Wheel::HandleEvents()
 
 	cameraPosition = moveForward(position, direction, 1.0f, cameraTurn);
 	cameraPosition.y = cameraHeight;
-	cameraAt = glm::vec3(
-		position.x + cameraZoom*sin((360.0f - direction)*DEGREES),
-		position.y,
-		position.z + cameraZoom*cos((360.0f - direction)*DEGREES));
+	cameraAt = glm::vec3(position.x + cameraZoom*sin((360.0f - direction)*DEGREES),
+						position.y,
+						position.z + cameraZoom*cos((360.0f - direction)*DEGREES));
 
 }
 

@@ -4,33 +4,104 @@ World::World()
 {
 }
 
-const int NUMBEROFOBJECTS = 17;
+const int NUMBEROFOBJECTS = 14;
 
 void World::Initialize()
 {
-	char buffer[128];
-	// loading all textures and objects
-	// textures and models should be named consecutively
-	// and follow a certain format textureXX (where XX is the 
-	// last texture value + 1) and same for modelXX
-	for (int i = 0; i != NUMBEROFOBJECTS; i++)
-	{
-		std::string temp = _itoa(i, buffer, 10);
-		std::string path = "textures/texture" + temp + ".bmp";
-		textures.push_back(Load::BMP((char*)path.c_str()));
-		path = "normals/normal" + temp + ".bmp";
-		normalMap.push_back(Load::BMP((char*)path.c_str()));
-		path = "model/model" + temp + ".obj";
-		models.push_back(Load::Obj((char*)path.c_str()));
-		indexCount.push_back(Load::meshCount());
-	}
+	models.push_back(Load::Obj("model/world/asphalt.map"));
+	textures.push_back(Load::BMP("model/world/asphalt/asphalt.bmp"));
+	normalMap.push_back(Load::BMP("model/world/asphalt/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
 
-	left.position = glm::vec4(-105.0f, 1000.0f, -75.0f, 1.0f);
-	right.position = glm::vec4(295.0f, 1000.0f, 325.0f, 1.0f);
-	up.position = glm::vec4(-105.0f, 1000.0f, 325.0f, 1.0f);
-	left.position = glm::vec4(295.0f, 1000.0f, -75.0f, 1.0f);
+	models.push_back(Load::Obj("model/world/grass.map"));
+	textures.push_back(Load::BMP("model/world/grass/grass.bmp"));
+	normalMap.push_back(Load::BMP("model/world/grass/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
 
-	std::cin;
+	models.push_back(Load::Obj("model/world/billbloard_buildings.map"));
+	textures.push_back(Load::BMP("model/world/billbloard_buildings/billbloard_buildings.bmp"));
+	normalMap.push_back(Load::BMP("model/world/billbloard_buildings/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/billbloard_buildings_roofs.map"));
+	textures.push_back(Load::BMP("model/world/billbloard_buildings_roofs/billbloard_buildings_roofs.bmp"));
+	normalMap.push_back(Load::BMP("model/world/billbloard_buildings_roofs/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/brick.map"));
+	textures.push_back(Load::BMP("model/world/brick/brick.bmp"));
+	normalMap.push_back(Load::BMP("model/world/brick/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	// TO DO: create normal map for connector and create textures
+	models.push_back(Load::Obj("model/world/connector.map"));
+	textures.push_back(Load::BMP("model/world/connector/connector.bmp"));
+	normalMap.push_back(Load::BMP("model/world/connector/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/field.map"));
+	textures.push_back(Load::BMP("model/world/field/field.bmp"));
+	normalMap.push_back(Load::BMP("model/world/field/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/floor.map"));
+	textures.push_back(Load::BMP("model/world/floor/floor.bmp"));
+	normalMap.push_back(Load::BMP("model/world/floor/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/ground_floor.map"));
+	textures.push_back(Load::BMP("model/world/ground_floor/ground_floor.bmp"));
+	normalMap.push_back(Load::BMP("model/world/ground_floor/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/ground_and_first_floor.map"));
+	textures.push_back(Load::BMP("model/world/ground_and_first_floor/ground_and_first_floor.bmp"));
+	normalMap.push_back(Load::BMP("model/world/ground_and_first_floor/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/passage.map"));
+	textures.push_back(Load::BMP("model/world/passage/passage.bmp"));
+	normalMap.push_back(Load::BMP("model/world/passage/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/pvcwindow.map"));
+	textures.push_back(Load::BMP("model/world/pvcwindow/pvcwindow.bmp"));
+	normalMap.push_back(Load::BMP("model/world/pvcwindow/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/roof.map"));
+	textures.push_back(Load::BMP("model/world/roof/roof.bmp"));
+	normalMap.push_back(Load::BMP("model/world/roof/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	// TO DO: normal map for track
+	models.push_back(Load::Obj("model/world/track.map"));
+	textures.push_back(Load::BMP("model/world/track/track.bmp"));
+	normalMap.push_back(Load::BMP("model/world/track/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	/* Light settings to tweak when using parallax
+	maybe adjust materials, light position, attenuation... etc.
+	*/
+	float quadratic = 0.01f;
+	
+	left.position = glm::vec4(-1000.0f, 1000.0f, -1000.0f, 1.0f);
+	left.constant = 0.0f;
+	left.linear = 0.0f;
+	left.quadratic = quadratic;
+	right.position = glm::vec4(-1000.0f, 1000.0f, 1250.0f, 1.0f);
+	right.constant = 0.0f;
+	right.linear = 0.0f;
+	right.quadratic = quadratic;
+	up.position = glm::vec4(1900.0f, 1000.0f, 1250.0f, 1.0f);
+	up.constant = 0.0f;
+	up.linear = 0.0f;
+	up.quadratic = quadratic;
+	down.position = glm::vec4(1900.0f, 1000.0f, -1000.0f, 1.0f);
+	down.constant = 0.0f;
+	down.linear = 0.0f;
+	down.quadratic = quadratic;
+	material.Ka = glm::vec4(1.0f);
 }
 
 bool enabled = true;
@@ -42,11 +113,16 @@ void World::Render()
 	
 	Shader::Push();
 	{
+		/* Light tweaking here too, depending how many lights to send 
+		into the shader
+		also here select Shader::Bump() for parallax or
+		Shader::DiffusePerVertex() for omnilight with texture
+		*/
 		Shader::Use(Shader::DiffusePerVertex());
-		Shader::AddLight(left, "light[0]");
+		//Shader::AddLight(left, "light[0]");
 		Shader::AddLight(right, "light[1]");
-		Shader::AddLight(up, "light[2]");
-		Shader::AddLight(down, "light[3]");
+		//Shader::AddLight(up, "light[2]");
+		//Shader::AddLight(down, "light[3]");
 		Shader::AddMaterial(material);
 
 		Shader::SetUniform("ModelViewMatrix",Shader::ModelViewMatrix());
@@ -56,7 +132,7 @@ void World::Render()
 		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 	
-		for (int i = 0; i != NUMBEROFOBJECTS; i++)
+		for (int i = 0; i < NUMBEROFOBJECTS; i++)
 
 		{
 			
