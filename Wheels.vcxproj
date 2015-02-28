@@ -95,7 +95,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
     <ClInclude Include="StateMachine.h" />
-    <ClInclude Include="Track.h" />
     <ClInclude Include="Wheel.h" />
     <ClInclude Include="World.h" />
   </ItemGroup>
@@ -112,7 +111,6 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="StateMachine.cpp" />
-    <ClCompile Include="Track.cpp" />
     <ClCompile Include="Wheel.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
