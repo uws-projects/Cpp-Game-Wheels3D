@@ -99,6 +99,9 @@ private:
 	bool collidedLeftZ = false;
 	bool collidedRightZ = false;
 	float zoomAmount;
+	int Startcount;
+	int Endcount;
+	int Finalcount;
 
 	bool canGearUp;
 	bool canGearDown;
@@ -114,6 +117,7 @@ private:
 	void gearUp();
 	void gearDown();
 	bool contacts(float& left, float& right, float& top, float &bottom, float& x, float &z);
+	void cameraCollision(int axis, int polarity);
 
 	std::vector<float> leftCollisionMap;
 	std::vector<float> rightCollisionMap;
