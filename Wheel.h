@@ -57,13 +57,16 @@ private:
 	
 	const float RHOAIR = 1.29f; // density of air
 	const float DT = 0.016f;
-	const float NEUTRAL = 0;
-	const float REVERSE = 7;
+	const unsigned int NEUTRAL = 0;
+	const unsigned int REVERSE = 7;
 	const float DIFFERENTIALRATIO = 3.42f;
+	const float CAMERACOLLISIONSPEED = 0.05f;
+	const float CAMERAMAXIMUMDISPLACEMENT = 0.5f;
+	const float DAMAGEAMOUNT = 0.001f;
 
 	float gears[8];		// 6 gears + reverse + neutral
 	unsigned currentGear;
-	float EnginePower;
+	int EnginePower;
 	float F_long;				// longitudinal force
 	float F_traction;			// traction force
 	float F_braking;			// braking force
@@ -75,6 +78,8 @@ private:
 	float rotationAngle;
 	float Velocity;				// Velocity
 	float Acceleration;			// Acceleration
+
+	float damage;
 	
 	GLuint model;
 	GLuint rubber;
@@ -83,7 +88,6 @@ private:
 	unsigned int indexCount;
 	glm::vec3 position;
 	glm::vec3 scale;
-	glm::vec3 lastPosition;
 	
 	float direction;
 	float cameraTurn;
@@ -92,8 +96,8 @@ private:
 	glm::vec3 cameraAt;
 	float cameraHeight;
 	float cameraZoom;
-	float cameraWidthX = position.x;
-	float cameraWidthZ = position.z;
+	float cameraWidthX;
+	float cameraWidthZ;
 	bool editingCameraPosition;
 	bool hugeZoom;
 	bool collidedLeftX = false;
@@ -101,25 +105,16 @@ private:
 	bool collidedLeftZ = false;
 	bool collidedRightZ = false;
 	float zoomAmount;
-	int a = 0;
 
 	bool canGearUp;
 	bool canGearDown;
 
-	Camera firstPersonCamera;
-	
 	int trackSection;
 
 	void checkTrack(int &section);
-	void checkCollision();
 	void initializePhysics();
 	void updatePhysics();
 	void gearUp();
 	void gearDown();
-	bool contacts(float& left, float& right, float& top, float &bottom, float& x, float &z);
-	void cameraCollision(int axis, int polarity);
-
-	std::vector<float> leftCollisionMap;
-	std::vector<float> rightCollisionMap;
 };
 
