@@ -359,7 +359,6 @@ void Wheel::checkTrack(int& section) {
 
 void Wheel::Update()
 {
-	Startcount = SDL_GetTicks();
 	// comment next line to disable collisions
 	checkTrack(trackSection);
 	if (currentGear == 6 && Velocity < 17) currentGear = 5;
@@ -370,53 +369,32 @@ void Wheel::Update()
 
 	cameraPosition = moveForward(position, direction, 1.0f, cameraTurn);
 	cameraPosition.y = cameraHeight;
+	cameraPosition.x += cameraWidthX;
+	cameraPosition.z += cameraWidthZ;
 	cameraAt = glm::vec3(position.x + cameraZoom*sin((360.0f - direction)*DEGREES), position.y, position.z + cameraZoom*cos((360.0f - direction)*DEGREES));
 
-	if (collidedLeftX == true){ for (int j = 0; j < 4; j++) cameraCollision(1, 1); }
-	if (collidedRightX == true){ for (int k = 0; k < 4; k++) cameraCollision(1, 2); }
-	if (collidedLeftZ == true){ for (int l = 0; l < 4; l++) cameraCollision(2, 1); }
-	if (collidedRightZ == true){ for (int m = 0; m < 4; m++) cameraCollision(2, 2); }
+	if (collidedLeftX == true) cameraCollision(1, 1);
+	if (collidedRightX == true) cameraCollision(1, 2);
+	if (collidedLeftZ == true) cameraCollision(2, 1);
+	if (collidedRightZ == true) cameraCollision(2, 2); 
 }
 
 void Wheel::cameraCollision(int axis, int polarity){
 	if (axis == 1){
 		if (polarity == 1){
-			Endcount = SDL_GetTicks();
-			Finalcount += Endcount - Startcount;
-			std::cout << "\nCount: " << Finalcount;
-			if (Finalcount >= 200){
-				cameraPosition.x -= 0.1;
-				Finalcount = 0.0;
-			}
+			cameraWidthX -= 0.01;
 		}
 		if (polarity == 2){
-			Endcount = SDL_GetTicks();
-			Finalcount += Endcount - Startcount;
-			std::cout << "\nCount: " << Finalcount;
-			if (Finalcount >= 200){
-				cameraPosition.x += 0.1;
-				Finalcount = 0.0;
-			}
+			cameraWidthX += 0.01;
 		}
 	}
 	if (axis == 2){
 		if (polarity == 1){
-			Endcount = SDL_GetTicks();
-			Finalcount += Endcount - Startcount;
-			std::cout << "\nCount: " << Finalcount;
-			if (Finalcount >= 200){
-				cameraPosition.z -= 0.1;
-				Finalcount = 0.0;
-			}
+			cameraWidthZ -= 0.01;
+
 		}
 		if (polarity == 2){
-			Endcount = SDL_GetTicks();
-			Finalcount += Endcount - Startcount;
-			std::cout << "\nCount: " << Finalcount;
-			if (Finalcount >= 200){
-				cameraPosition.z += 0.1;
-				Finalcount = 0.0;
-			}
+			cameraWidthZ += 0.01;
 		}
 	}
 }

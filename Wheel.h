@@ -92,6 +92,8 @@ private:
 	glm::vec3 cameraAt;
 	float cameraHeight;
 	float cameraZoom;
+	float cameraWidthX = position.x;
+	float cameraWidthZ = position.z;
 	bool editingCameraPosition;
 	bool hugeZoom;
 	bool collidedLeftX = false;
@@ -99,9 +101,7 @@ private:
 	bool collidedLeftZ = false;
 	bool collidedRightZ = false;
 	float zoomAmount;
-	int Startcount;
-	int Endcount;
-	int Finalcount;
+	int a = 0;
 
 	bool canGearUp;
 	bool canGearDown;
