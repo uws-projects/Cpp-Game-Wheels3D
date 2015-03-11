@@ -27,7 +27,7 @@ struct Material
 	float shininess;
 };
 
-uniform Light light[3];
+uniform Light light[4];
 uniform Material material;
 
 uniform sampler2D colourMap;
@@ -39,10 +39,10 @@ uniform float parallaxOffset;
 uniform bool parallaxEnabled;
 
 in vec2 originalCoordinates;
-in float lightRayLength[2];
+in float lightRayLength[4];
 
 in vec3 cameraTangent;
-in vec3 lightTan[2];
+in vec3 lightTan[4];
 
 float parallaxHeight;
 float numberOfSegments;
@@ -167,16 +167,8 @@ vec4 LightCalculation(Light light, vec2 T, vec3 lightTangent, float distance)
 
 	vec3 R = normalize(reflect(-lightTangent,N));
 	specularI = specularI * pow(max(dot(R,cameraTangent),0), material.shininess);
-
-	float attenuation = 
-	attConst		+ 
-	attLinear		*	distance	+ 
-	attQuadratic	*	distance	* distance;
 	
-	// this is to avoid display errors if attenuation is not sent to GPU
-	if (attenuation == 0) attenuation = 1.0;
-	
-	float shadow =1.005;//ShadowCalculation(light.position);
+	float shadow =1.000;//ShadowCalculation(light.position);
 
 	return vec4((diffuseI* 2.2).rgb, 1.0f );
 }

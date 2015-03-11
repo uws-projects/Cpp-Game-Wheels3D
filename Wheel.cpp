@@ -1,15 +1,26 @@
 #pragma once
 #include "Wheel.h"
 
+#ifndef COMPLETE
+#define COMPLETE true
+#endif
+#ifndef INCOMPELTE
+#define INCOMPLETE false
+#endif
+
 Wheel::Wheel()
 {
 }
+
+bool raceStarted = false;
+
+// better texture wrong shape roata obj, cull-face back, texture texture.bmp
 
 void Wheel::Initialize()
 {
 	//firstPersonCamera.Initialize();
 	model = Load::Obj(".\\model\\wheels_ultimul.obj");
-	//model = Load::Obj(".\\model\\world\\wheel.model");
+	//model = Load::Obj(".\\model\\world\\roata.obj");
 	indexCount = Load::meshCount();
 	material.Ka = glm::vec4(0.0, 0.0, 0.0, 1.0);
 	material.Kd = glm::vec4(0.649020f, 0.837255f, 0.717647f, 1.0);
@@ -24,17 +35,22 @@ void Wheel::Initialize()
 	Acceleration = 0;
 	rubber = Load::BMP(".\\model\\world\\wheel\\texture.bmp");
 	scale = glm::vec3(1.0f);
-	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f);
+	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f-RADIUS);
 
 	damage = 0.0f;
 
 	cameraWidthX = 0.0f;
 	cameraWidthZ = 0.0f;
-	cameraHeight = position.y*2.5f;
+	cameraHeight = position.y*2.5f*80;
 	cameraZoom = 2.0f;
 	editingCameraPosition = false;
 	hugeZoom = false;
 	zoomAmount = 0.1f;
+
+	for (int section = 0; section < 32; section++)
+	{
+		lap[section] = INCOMPLETE;
+	}
 
 	initializePhysics();
 
@@ -47,7 +63,7 @@ void Wheel::Render()
 	Shader::Push();
 	{
 		glEnable(GL_DEPTH_TEST);
-		glCullFace(GL_FRONT);
+		glCullFace(GL_BACK);
 		Shader::Use(Shader::Bump());
 		Shader::AddLight(light);
 		Shader::AddMaterial(material);
@@ -95,268 +111,255 @@ void Wheel::gearDown()
 	}
 }
 
+bool complete = false;
+double startTime;
+
 void Wheel::checkTrack(int& section) {
 	float velocityPenalty = 0.95f;
+	collidedRightX = collidedLeftX = false;
+	collidedRightZ = collidedLeftZ = false;
 	switch (section)
 	{
-	case 0: {
+	case 0: {			
+				
 				if (position.x < 35.9921f + RADIUS) { position.x = 35.9921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
 				if (position.x > 38.4921f - RADIUS) { position.x = 38.4921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftX = false; }
 				if (position.z < 4.73671f) { section = 31; }
-				if (position.z > 104.737f) { section = 1; }
+				if (position.z > 104.737f) { lap[section] = COMPLETE; section = 1; }
+				// only in this section, check if the lap is complete
+				// a lap is complete when is over the finish line and ALL sections are complete
+				if (position.z > 19.7211f - RADIUS)
+				{
+					
+					for (int section = 0; section < 32; section++)
+					{
+						if (lap[section] == INCOMPLETE)
+						{
+							complete = INCOMPLETE;
+							break;
+						}
+						else complete = COMPLETE;
+					}
+
+					if (complete) {
+						startTime = SDL_GetTicks() - startTime;
+						int minutes = startTime / 60000;
+						int seconds = (startTime - (minutes * 60000)) / 1000;
+						int mili = startTime - minutes * 60000 - seconds * 1000;
+						std::cout << "\nRace completed in ";
+						if (minutes < 10) std::cout << ":0" << minutes;
+						else std::cout << minutes;
+						if (seconds < 10) std::cout << ":0" << seconds;
+						else std::cout << seconds;
+						std::cout << ":" << mili;
+						std::cin.ignore();
+					}
+				}
 	} break;
 	case 1: {				
 				if (position.z > 108.237f - RADIUS) { position.z = 108.237f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
-				if (position.x > 38.4921f - RADIUS) { position.x = 38.4921f - RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
+				if (position.x > 38.4921f - RADIUS) { position.x = 38.4921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
 				if (position.z < 104.737f) { section = 0; }
-				if (position.x < 35.9921f) { section = 2; }
+				if (position.x < 35.9921f) { lap[section] = COMPLETE; section = 2; }
 	} break;
 	case 2: {
+				collidedRightX = collidedLeftX = false;
+				collidedRightZ = collidedLeftZ = false;
 				if (position.z < 104.737f + RADIUS) { position.z = 104.737f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightZ = false; }
 				if (position.z > 108.237f - RADIUS)	{ position.z = 108.237f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
-				if (position.x < 2.99211f) { section = 3; }
+				if (position.x < 2.99211f) { lap[section] = COMPLETE; section = 3; }
 				if (position.x > 35.9921f) { section = 1; }
 	} break;
 	case 3: {
-				if (position.z < 104.737f + RADIUS) { position.z = 104.737f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
+				if (position.z < 104.737f + RADIUS) { position.z = 104.737f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
 				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
-				if (position.z > 108.237f) { section = 4; }
+				if (position.z > 108.237f) { lap[section] = COMPLETE; section = 4; }
 				if (position.x > 2.99211f) { section = 2; }
 	} break;
 	case 4: {
 				if (position.x > 2.99211f - RADIUS) { position.x = 2.99211f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftX = false; }
 				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
 				if (position.z < 108.237f) { section = 3; }
-				if (position.z > 158.237f) { section = 5; }
+				if (position.z > 158.237f) { lap[section] = COMPLETE; section = 5; }
 	} break;
 	case 5: {
 				if (position.x < 1.49211f + RADIUS) { position.x = 1.49211f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
-				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightZ = false; }
-				if (position.x > 2.99211f) { section = 6; }
+				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 2.99211f) { lap[section] = COMPLETE; section = 6; }
 				if (position.z < 158.237f) { section = 4; }
 	} break;
 	case 6: {
 				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
 				if (position.z < 158.237f + RADIUS) { position.z = 158.237f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightZ = false; }
 				if (position.x < 2.99211f) { section = 5; }
-				if (position.x > 44.9921f) { section = 7; }
+				if (position.x > 44.9921f) { lap[section] = COMPLETE; section = 7; }
 	} break;
 	case 7: {
-				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightZ = false; }
+				if (position.z > 160.737f - RADIUS) { position.z = 160.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
 				if (position.x > 49.4921f - RADIUS) { position.x = 49.4921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftX = false; }
 				if (position.x < 44.9921f) { section = 6; }
-				if (position.z < 158.237f) { section = 8; }
+				if (position.z < 158.237f) { lap[section] = COMPLETE; section = 8; }
 	} break;
 	case 8: {
 				if (position.x > 49.4921f - RADIUS) { position.x = 49.4921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftX = false; }
 				if (position.x < 44.9921f + RADIUS) { position.x = 44.9921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
 				if (position.z > 158.237f) { section = 7; }
-				if (position.z < 152.237f) { section = 9; }
+				if (position.z < 152.237f) { lap[section] = COMPLETE; section = 9; }
 	} break;
 	case 9: {
 				if (position.x < 44.9921f + RADIUS) { position.x = 44.9921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightX = false; }
-				if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
-				if (position.x > 49.4921f) { section = 10; }
+				if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 49.4921f) { lap[section] = COMPLETE; section = 10; }
 				if (position.z > 152.237f) { section = 8; }
 	} break;
 	case 10: {
-				 if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedRightZ = false; }
+				if (position.z < 144.737f + RADIUS) { position.z = 144.737f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
 				if (position.z > 152.237f - RADIUS) { position.z = 152.237f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				else { collidedLeftZ = false; }
 				if (position.x < 49.4921f) { section = 9; }
-				if (position.x > 66.4921f) { section = 11; }
+				if (position.x > 66.4921f) { lap[section] = COMPLETE; section = 11; }
 	} break;
 	case 11: {
-				 if (position.z > 152.237f - RADIUS) { position.z = 152.237f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 66.4921f) { section = 10; }
-				 if (position.z < 144.737f) { section = 12; }
+				if (position.z > 152.237f - RADIUS) { position.z = 152.237f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 66.4921f) { section = 10; }
+				if (position.z < 144.737f) { lap[section] = COMPLETE; section = 12; }
 	} break;
 	case 12: {
-				 if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z > 144.737f) { section = 11; }
-				 if (position.z < 111.737f) { section = 13; }
+				if (position.x > 68.9921f - RADIUS) { position.x = 68.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 144.737f) { section = 11; }
+				if (position.z < 111.737f) { lap[section] = COMPLETE; section = 13; }
 	} break;
 	case 13: {
-				 if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 111.737f) { section = 12; }
-				 if (position.x > 68.9921f) { section = 14; }
+				if (position.x < 66.4921f + RADIUS) { position.x = 66.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 111.737f) { section = 12; }
+				if (position.x > 68.9921f) { lap[section] = COMPLETE; section = 14; }
 	} break;
 	case 14: {
-				 if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.x < 68.9921f) { section = 13; }
-				 if (position.x > 126.992f) { section = 15; }
+				if (position.z < 109.237f + RADIUS) { position.z = 109.237f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 68.9921f) { section = 13; }
+				if (position.x > 126.992f) { lap[section] = COMPLETE; section = 15; }
 	} break;
 	case 15: {
-				 if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 126.992f) { section = 14; }
-				 if (position.z < 109.237f) { section = 16; }
+				if (position.z > 111.737f - RADIUS) { position.z = 111.737f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 126.992f) { section = 14; }
+				if (position.z < 109.237f) { lap[section] = COMPLETE; section = 16; }
 	} break;
 	case 16: {
-				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 126.992f + RADIUS) { position.x = 126.992f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z > 109.237f) { section = 15; }
-				 if (position.z < 90.2367f) { section = 17; }
+				if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 126.992f + RADIUS) { position.x = 126.992f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 109.237f) { section = 15; }
+				if (position.z < 90.2367f) { lap[section] = COMPLETE; section = 17; }
 	} break; 
 	case 17: {
-				 if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 90.2367f) { section = 16; }
-				 if (position.x < 126.992f) { section = 18; }
+				if (position.x > 137.492f - RADIUS) { position.x = 137.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 90.2367f) { section = 16; }
+				if (position.x < 126.992f) { lap[section] = COMPLETE; section = 18; }
 	} break;
 	case 18: {
-				 if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.x > 126.992f) { section = 17; }
-				 if (position.x < 90.9921f) { section = 19; }
+				if (position.z < 87.7367f + RADIUS) { position.z = 87.7367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 126.992f) { section = 17; }
+				if (position.x < 90.9921f) { lap[section] = COMPLETE; section = 19; }
 	} break;
 	case 19: {
-				 if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x > 90.9921f) { section = 18; }
-				 if (position.z < 87.7367f) { section = 20; }
+				if (position.z > 90.2367f - RADIUS) { position.z = 90.2367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 90.9921f) { section = 18; }
+				if (position.z < 87.7367f) { lap[section] = COMPLETE; section = 20; }
 	} break;
 	case 20: {
-				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.x > 90.9921f - RADIUS) { position.x = 90.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.z > 87.7367f) { section = 19; }
-				 if (position.z < 65.7367f) { section = 21; }
+				if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 90.9921f - RADIUS) { position.x = 90.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 87.7367f) { section = 19; }
+				if (position.z < 65.7367f) { lap[section] = COMPLETE; section = 21; }
 	} break;
 	case 21: {
-				 if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 65.7367f) { section = 20; }
-				 if (position.x > 90.9921f) { section = 22; }
+				if (position.x < 88.4921f + RADIUS) { position.x = 88.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 65.7367f) { section = 20; }
+				if (position.x > 90.9921f) { lap[section] = COMPLETE; section = 22; }
 	} break;
 	case 22: {
-				 if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.x < 90.9921f) { section = 21; }
-				 if (position.x > 140.992f) { section = 23; }
+				if (position.z < 63.2367f + RADIUS) { position.z = 63.2367f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 90.9921f) { section = 21; }
+				if (position.x > 140.992f) { lap[section] = COMPLETE; section = 23; }
 	} break;
 	case 23: {
-				 if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 140.992f) { section = 22; }
-				 if (position.z < 63.2367f) { section = 24; }
+				if (position.z > 65.7367f - RADIUS) { position.z = 65.7367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 140.992f) { section = 22; }
+				if (position.z < 63.2367f) { lap[section] = COMPLETE; section = 24; }
 	} break;
 	case 24: {
-				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x < 140.992f + RADIUS) { position.x = 140.992f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z > 63.2367f) { section = 23; }
-				 if (position.z < 10.2367f) { section = 25; }
+				if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 140.992f + RADIUS) { position.x = 140.992f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 63.2367f) { section = 23; }
+				if (position.z < 10.2367f) { lap[section] = COMPLETE; section = 25; }
 	} break;
 	case 25: {
-				 if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 10.2367f) { section = 24; }
-				 if (position.x < 140.992f) { section = 26; }
+				if (position.x > 142.492f - RADIUS) { position.x = 142.492f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 10.2367f) { section = 24; }
+				if (position.x < 140.992f) { lap[section] = COMPLETE; section = 26; }
 	} break;
 	case 26: {
-				 if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x > 140.992f) { section = 25; }
-				 if (position.x < 93.9921f) { section = 27; }
+				if (position.z < 5.73671f + RADIUS) { position.z = 5.73671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 140.992f) { section = 25; }
+				if (position.x < 93.9921f) { lap[section] = COMPLETE; section = 27; }
 	} break;
 	case 27: {
-				 if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.x > 93.9921f) { section = 26; }
-				 if (position.z < 5.73671f) { section = 28; }
+				if (position.z > 10.2367f - RADIUS) { position.z = 10.2367f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 93.9921f) { section = 26; }
+				if (position.z < 5.73671f) { lap[section] = COMPLETE; section = 28; }
 	} break;
 	case 28: {
-				 if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightX = false; }
-				 if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftX = false; }
-				 if (position.z > 5.73671f) { section = 27; }
-				 if (position.z < 4.73671f) { section = 29; }
+				if (position.x < 91.4921f + RADIUS) { position.x = 91.4921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 5.73671f) { section = 27; }
+				if (position.z < 4.73671f) { lap[section] = COMPLETE; section = 29; }
 	} break;
 	case 29: {
-				 if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.z > 4.73671f) { section = 28; }
-				 if (position.x < 91.4921f) { section = 30; }
+				if (position.x > 93.9921f - RADIUS) { position.x = 93.9921f - RADIUS; Velocity *= velocityPenalty; collidedLeftX = true; damage+= DAMAGEAMOUNT; }
+				if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 4.73671f) { section = 28; }
+				if (position.x < 91.4921f) { lap[section] = COMPLETE; section = 30; }
 	} break;
 	case 30: {
-				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.z > 4.73671f - RADIUS) { position.z = 4.73671f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.x > 91.4921f) { section = 29; }
-				 if (position.x < 38.4921f) { section = 31; }
+				if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.z > 4.73671f - RADIUS) { position.z = 4.73671f - RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 91.4921f) { section = 29; }
+				if (position.x < 38.4921f) { lap[section] = COMPLETE; section = 31; }
 	} break;
 	case 31: {
-				 if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedRightZ = false; }
-				 if (position.x < 35.9921f + RADIUS) { position.x = 35.9921f + RADIUS; Velocity *= velocityPenalty; collidedLeftZ = true; damage+= DAMAGEAMOUNT; }
-				 else { collidedLeftZ = false; }
-				 if (position.x > 38.4921f) { section = 30; }
-				 if (position.z > 4.73671f) { section = 0; }
+				if (position.z < 2.23671f + RADIUS) { position.z = 2.23671f + RADIUS; Velocity *= velocityPenalty; collidedRightZ = true; damage+= DAMAGEAMOUNT; }
+				if (position.x < 35.9921f + RADIUS) { position.x = 35.9921f + RADIUS; Velocity *= velocityPenalty; collidedRightX = true; damage+= DAMAGEAMOUNT; }
+				if (position.x > 38.4921f) { section = 30; }
+				if (position.z > 4.73671f) { lap[section] = COMPLETE; section = 0; }
 	} break;
 	default: 
 		break;
+	}
+
+	if (JOY->JoysticksInitialised()) {
+		if (JOY_A)
+		{
+			std::cout << "\nSection: " << section;
+			std::cout << "\nCollided LeftZ: " << collidedLeftZ;
+			std::cout << "\nCollided RightZ: " << collidedRightZ;
+			std::cout << "\nCollided LeftX: " << collidedLeftX;
+			std::cout << "\nCollided RightX: " << collidedRightX;
+			for (int i = 0; i < 32; i++)
+				std::cout << "\nSection[" << i << "] is complete? : " << lap[i];
+			std::cout << "\n Still racing? " << raceStarted;
+		}
 	}
 }
 
@@ -482,101 +485,116 @@ void Wheel::updatePhysics()
 
 void Wheel::HandleEvents()
 {
-	if (JOY->JoysticksInitialised())
+
+	if (!raceStarted)
 	{
-
-		float RightStickXvalue = (JOY->xValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
-		float RightStickYvalue = (JOY->yValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
-		float LeftStickXValue = (JOY->xValue(JOYSTICK1, LEFTSTICK)) / 364 + 15.23123f;
-
-		// record trigger values and invert axis 
-		/* by default the right trigger returns negative values 
-		*  and left trigger returns positive values, but we want to 
-		*  use the commands inverted (RT gas LT brake) so we multiply by -1
-		*/
-		Trigger = JOY->zValue(JOYSTICK1)*-1;
-
-		// transform joystick axis in percentage values from -100 to 100
-		EnginePower = (Trigger / 32765) * 100;
-
-		// value to reduce turning at high speeds
-		float toAdd = (LeftStickXValue / 50.0f);// *(1.1f + Velocity*0.8f);
-
-		if (LeftStickXValue > 15.0f || LeftStickXValue < -15.0f) direction += toAdd;
-		
-		// gear up on release of RB
-		if (canGearUp)
+		if (cameraHeight > position.y * 2.5f) cameraHeight -= 0.3f;
+		else 
 		{
-			if (JOY_RB) {
-				canGearUp = false;
-				gearUp();
-				std::cout << "\n DAMAGE: " << damage;
-			}
+			raceStarted = true; 
+			
+			startTime = SDL_GetTicks();
 		}
-
-		// gear down on release of LB
-		if (canGearDown)
-		{
-			if (JOY_LB) {
-				canGearDown = false;
-				gearDown();
-			}
-		}
-
-		// update toggles
-		if (JOY_RB == SDL_RELEASED) canGearUp = true;
-		if (JOY_LB == SDL_RELEASED) canGearDown = true;
-		
-		// camera controls
-		// pressing select enables editing camera position
-		if (JOY_SELECT)
-		{
-			editingCameraPosition = !editingCameraPosition;
-			SDL_Delay(50);
-		}
-
-		// pressing start enables fast zoom
-		if (JOY_START)
-		{
-			hugeZoom = !hugeZoom;
-			SDL_Delay(50);
-			if (hugeZoom) zoomAmount = 1.0f;
-			else zoomAmount = 0.1f;
-		}
-
-		if (editingCameraPosition) {
-			if (RightStickYvalue > 10) if (cameraHeight > 0.1f) cameraHeight -= zoomAmount;
-			if (RightStickYvalue < -10) cameraHeight += zoomAmount;
-			if (RightStickXvalue > 10) if (cameraZoom < 10.0f) cameraZoom += zoomAmount;
-			if (RightStickXvalue< -10) if (cameraZoom > 0.1f) cameraZoom -= zoomAmount;
-		}
-		cameraTurn = -RightStickYvalue;			
 	}
 	else
 	{
-		// movement
-		if (PRESSING(SDL_SCANCODE_W)) if (EnginePower < 100)  EnginePower+=2.0f; 
-		if (PRESSING(SDL_SCANCODE_S)) if (EnginePower > -100) EnginePower-=2.0f;
-		if (PRESSING(SDL_SCANCODE_D)) direction+=2; 
-		if (PRESSING(SDL_SCANCODE_A)) direction -= 2;
 
-		// gear shifting 
-		// manual
-		if (PRESSING(SDL_SCANCODE_1)) currentGear = 1;
-		if (PRESSING(SDL_SCANCODE_2)) currentGear = 2;
-		if (PRESSING(SDL_SCANCODE_3)) currentGear = 3;
-		if (PRESSING(SDL_SCANCODE_4)) currentGear = 4;
-		if (PRESSING(SDL_SCANCODE_5)) currentGear = 5;
-		if (PRESSING(SDL_SCANCODE_6)) currentGear = 6;
-		// automatic
-		if (PRESSING(SDL_SCANCODE_Q)) gearDown();
-		if (PRESSING(SDL_SCANCODE_E)) gearUp();
+		if (JOY->JoysticksInitialised())
+		{
+
+			float RightStickXvalue = (JOY->xValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
+			float RightStickYvalue = (JOY->yValue(JOYSTICK1, RIGHTSTICK)) / 364 + 15.23123f;
+			float LeftStickXValue = (JOY->xValue(JOYSTICK1, LEFTSTICK)) / 364 + 15.23123f;
+
+			// record trigger values and invert axis 
+			/* by default the right trigger returns negative values
+			*  and left trigger returns positive values, but we want to
+			*  use the commands inverted (RT gas LT brake) so we multiply by -1
+			*/
+			Trigger = JOY->zValue(JOYSTICK1)*-1;
+
+			// transform joystick axis in percentage values from -100 to 100
+			EnginePower = (Trigger / 32765) * 100;
+
+			// value to reduce turning at high speeds
+			float toAdd = (LeftStickXValue / 50.0f);// *(1.1f + Velocity*0.8f);
+
+			if (LeftStickXValue > 17.0f || LeftStickXValue < -17.0f) direction += toAdd;
+
+			// gear up on release of RB
+			if (canGearUp)
+			{
+				if (JOY_RB) {
+					canGearUp = false;
+					gearUp();
+				}
+			}
+
+			// gear down on release of LB
+			if (canGearDown)
+			{
+				if (JOY_LB) {
+					canGearDown = false;
+					gearDown();
+				}
+			}
+
+			// update toggles
+			if (JOY_RB == SDL_RELEASED) canGearUp = true;
+			if (JOY_LB == SDL_RELEASED) canGearDown = true;
+
+			// camera controls
+			// pressing select enables editing camera position
+			if (JOY_SELECT)
+			{
+				editingCameraPosition = !editingCameraPosition;
+				SDL_Delay(50);
+			}
+
+		
+			// pressing start enables fast zoom
+			if (JOY_START)
+			{
+				hugeZoom = !hugeZoom;
+				SDL_Delay(50);
+				if (hugeZoom) zoomAmount = 1.0f;
+				else zoomAmount = 0.1f;
+			}
+
+			if (editingCameraPosition) {
+				if (RightStickYvalue > 10) if (cameraHeight > 0.1f) cameraHeight -= zoomAmount;
+				if (RightStickYvalue < -10) cameraHeight += zoomAmount;
+				if (RightStickXvalue > 10) if (cameraZoom < 10.0f) cameraZoom += zoomAmount;
+				if (RightStickXvalue< -10) if (cameraZoom > 0.1f) cameraZoom -= zoomAmount;
+			}
+			cameraTurn = -RightStickYvalue;
+		}
+		else
+		{
+			// movement
+			if (PRESSING(SDL_SCANCODE_W)) if (EnginePower < 100)  EnginePower += 2.0f;
+			if (PRESSING(SDL_SCANCODE_S)) if (EnginePower > -100) EnginePower -= 2.0f;
+			if (PRESSING(SDL_SCANCODE_D)) direction += 2;
+			if (PRESSING(SDL_SCANCODE_A)) direction -= 2;
+
+			// gear shifting 
+			// manual
+			if (PRESSING(SDL_SCANCODE_1)) currentGear = 1;
+			if (PRESSING(SDL_SCANCODE_2)) currentGear = 2;
+			if (PRESSING(SDL_SCANCODE_3)) currentGear = 3;
+			if (PRESSING(SDL_SCANCODE_4)) currentGear = 4;
+			if (PRESSING(SDL_SCANCODE_5)) currentGear = 5;
+			if (PRESSING(SDL_SCANCODE_6)) currentGear = 6;
+			// automatic
+			if (PRESSING(SDL_SCANCODE_Q)) gearDown();
+			if (PRESSING(SDL_SCANCODE_E)) gearUp();
+		}
+
+		updatePhysics();
+		// update wheel position
+		position.x += Velocity * -std::sin(direction*DEGREES) * DT;
+		position.z += Velocity * std::cos(direction*DEGREES) * DT;
 	}
-
-	updatePhysics();
-	// update wheel position
-	position.x += Velocity * -std::sin(direction*DEGREES) * DT;
-	position.z += Velocity * std::cos(direction*DEGREES) * DT;
 }
 
 Wheel::~Wheel()

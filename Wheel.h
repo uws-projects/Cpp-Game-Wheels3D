@@ -62,7 +62,7 @@ private:
 	const float DIFFERENTIALRATIO = 3.42f;
 	const float CAMERACOLLISIONSPEED = 0.05f;
 	const float CAMERAMAXIMUMDISPLACEMENT = 0.5f;
-	const float DAMAGEAMOUNT = 0.001f;
+	const float DAMAGEAMOUNT = 0.0f;
 
 	float gears[8];		// 6 gears + reverse + neutral
 	unsigned currentGear;
@@ -110,6 +110,7 @@ private:
 	bool canGearDown;
 
 	int trackSection;
+	bool lap[32];
 
 	void checkTrack(int &section);
 	void initializePhysics();

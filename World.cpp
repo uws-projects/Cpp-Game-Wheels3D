@@ -4,7 +4,7 @@ World::World()
 {
 }
 
-const int NUMBEROFOBJECTS = 14;
+const int NUMBEROFOBJECTS = 17;
 
 void World::Initialize()
 {
@@ -80,24 +80,39 @@ void World::Initialize()
 	normalMap.push_back(Load::BMP("model/world/track/normal.bmp"));
 	indexCount.push_back(Load::meshCount());
 
+	models.push_back(Load::Obj("model/world/road_signs.map"));
+	textures.push_back(Load::BMP("model/world/road_signs/road_signs.bmp"));
+	normalMap.push_back(Load::BMP("model/world/road_signs/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/start_finish.map"));
+	textures.push_back(Load::BMP("model/world/start_finish/start_finish.bmp"));
+	normalMap.push_back(Load::BMP("model/world/start_finish/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
+	models.push_back(Load::Obj("model/world/test.obj"));
+	textures.push_back(Load::BMP("model/world/margin/margin.bmp"));
+	normalMap.push_back(Load::BMP("model/world/margin/normal.bmp"));
+	indexCount.push_back(Load::meshCount());
+
 	/* Light settings to tweak when using parallax
 	maybe adjust materials, light position, attenuation... etc.
 	*/
 	float quadratic = 0.01f;
 	
-	left.position = glm::vec4(-1000.0f, 1000.0f, -1000.0f, 1.0f);
+	left.position = glm::vec4(-95.0f, 1000.0f, -1000.0f, 1.0f);
 	left.constant = 0.0f;
 	left.linear = 0.0f;
 	left.quadratic = quadratic;
-	right.position = glm::vec4(-1000.0f, 1000.0f, 1250.0f, 1.0f);
+	right.position = glm::vec4(-95.0f, 1000.0f, 2250.0f, 1.0f);
 	right.constant = 0.0f;
 	right.linear = 0.0f;
 	right.quadratic = quadratic;
-	up.position = glm::vec4(1900.0f, 1000.0f, 1250.0f, 1.0f);
+	up.position = glm::vec4(1900.0f, 1000.0f, 125.0f, 1.0f);
 	up.constant = 0.0f;
 	up.linear = 0.0f;
 	up.quadratic = quadratic;
-	down.position = glm::vec4(1900.0f, 1000.0f, -1000.0f, 1.0f);
+	down.position = glm::vec4(-1900.0f, 1000.0f, -125.0f, 1.0f);
 	down.constant = 0.0f;
 	down.linear = 0.0f;
 	down.quadratic = quadratic;
@@ -119,10 +134,10 @@ void World::Render()
 		Shader::DiffusePerVertex() for omnilight with texture
 		*/
 		Shader::Use(Shader::DiffusePerVertex());
-		//Shader::AddLight(left, "light[0]");
+		Shader::AddLight(left, "light[0]");
 		Shader::AddLight(right, "light[1]");
-		//Shader::AddLight(up, "light[2]");
-		//Shader::AddLight(down, "light[3]");
+		Shader::AddLight(up, "light[2]");
+		Shader::AddLight(down, "light[3]");
 		Shader::AddMaterial(material);
 
 		Shader::SetUniform("ModelViewMatrix",Shader::ModelViewMatrix());

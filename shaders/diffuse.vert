@@ -57,7 +57,7 @@ vec3 LightFunction(Light light)
 	vec3 diffuseI = Ld * Kd * max ( dot (norm, s), 0.0);
 	float attenuation = (attConst + attLinear * D + attQuadratic * D * D);
 	if (attenuation == 0) attenuation = 1.0;
-	return diffuseI/attenuation;
+	return diffuseI;//attenuation;
 }
 
 void main()
