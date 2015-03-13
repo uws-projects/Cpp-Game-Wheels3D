@@ -2,6 +2,7 @@
 #include <algorithm>
 #include "rt3dObjLoader.h"
 #include "rt3d.h"
+#include <SDL_image.h>
 
 std::vector<GLfloat> Load::verts;
 std::vector<GLfloat> Load::norms;
@@ -368,6 +369,53 @@ GLuint Load::BMP(char *fname) {
 	SDL_FreeSurface(tmpSurface); // texture loaded, free the temporary buffer
 	if (texID != 0) std::cout << "Loaded texture " << fname << " successfully\n";
 	return texID;	// return value of texture ID
+}
+
+GLuint Load::PNG(char *fname) {
+	// load file - using core SDL library
+	int imgFlags = IMG_INIT_PNG;
+	if (!(IMG_Init(imgFlags) & imgFlags))
+	{
+		printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
+		return 0;
+	}
+	else {
+		GLuint texID;
+		glGenTextures(1, &texID); // generate texture ID
+
+		SDL_Surface *tmpSurface;
+		tmpSurface = IMG_Load(fname);
+		if (!tmpSurface) {
+			std::cout << "\nError loading image file " << fname << " when calling Load::PNG function \n";
+		}
+
+		// bind texture and set parameters
+		glBindTexture(GL_TEXTURE_2D, texID);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		SDL_PixelFormat *format = tmpSurface->format;
+
+		GLuint externalFormat, internalFormat;
+		if (format->Amask) {
+			internalFormat = GL_RGBA;
+			externalFormat = (format->Rmask < format->Bmask) ? GL_RGBA : GL_BGRA;
+		}
+		else {
+			internalFormat = GL_RGB;
+			externalFormat = (format->Rmask < format->Bmask) ? GL_RGB : GL_BGR;
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, tmpSurface->w, tmpSurface->h, 0,
+			externalFormat, GL_UNSIGNED_BYTE, tmpSurface->pixels);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		SDL_FreeSurface(tmpSurface); // texture loaded, free the temporary buffer
+		if (texID != 0) std::cout << "\nLoaded image " << fname;
+		return texID;	// return value of texture ID
+	}
 }
 
 // just a wrapper for Daniel Livingstone`s loader to which I added Pablo Casaseca`s tangent loader;

@@ -35,7 +35,7 @@ void Wheel::Initialize()
 	direction = 0;
 	rotationAngle = 0;
 	Acceleration = 0;
-	rubber = Load::BMP(".\\model\\world\\wheel\\texture.bmp");
+	rubber = Load::PNG(".\\model\\world\\wheel\\texture.png");
 	scale = glm::vec3(1.0f);
 	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f-RADIUS);
 

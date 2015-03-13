@@ -13,6 +13,7 @@ public:
 	static GLuint Text(const char * str);
 	static GLuint CubeMap(const char *fname[6], GLuint *texID);
 	static GLuint BMP(char *fname);
+	static GLuint PNG(char *fname);
 	static GLuint Obj(const char* fileName);
 	static std::vector<float> CollisionMap(const char* fileName);
 	static char* File(const char* fileName);

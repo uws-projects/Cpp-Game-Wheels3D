@@ -9,90 +9,90 @@ const int NUMBEROFOBJECTS = 17;
 void World::Initialize()
 {
 	models.push_back(Load::Obj("model/world/asphalt.map"));
-	textures.push_back(Load::BMP("model/world/asphalt/asphalt.bmp"));
-	normalMap.push_back(Load::BMP("model/world/asphalt/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/asphalt/asphalt.png"));
+	normalMap.push_back(Load::PNG("model/world/asphalt/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/grass.map"));
-	textures.push_back(Load::BMP("model/world/grass/grass.bmp"));
-	normalMap.push_back(Load::BMP("model/world/grass/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/grass/grass.png"));
+	normalMap.push_back(Load::PNG("model/world/grass/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/billbloard_buildings.map"));
-	textures.push_back(Load::BMP("model/world/billbloard_buildings/billbloard_buildings.bmp"));
-	normalMap.push_back(Load::BMP("model/world/billbloard_buildings/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/billbloard_buildings/billbloard_buildings.png"));
+	normalMap.push_back(Load::PNG("model/world/billbloard_buildings/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/billbloard_buildings_roofs.map"));
-	textures.push_back(Load::BMP("model/world/billbloard_buildings_roofs/billbloard_buildings_roofs.bmp"));
-	normalMap.push_back(Load::BMP("model/world/billbloard_buildings_roofs/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/billbloard_buildings_roofs/billbloard_buildings_roofs.png"));
+	normalMap.push_back(Load::PNG("model/world/billbloard_buildings_roofs/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/brick.map"));
-	textures.push_back(Load::BMP("model/world/brick/brick.bmp"));
-	normalMap.push_back(Load::BMP("model/world/brick/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/brick/brick.png"));
+	normalMap.push_back(Load::PNG("model/world/brick/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	// TO DO: create normal map for connector and create textures
 	models.push_back(Load::Obj("model/world/connector.map"));
-	textures.push_back(Load::BMP("model/world/connector/connector.bmp"));
-	normalMap.push_back(Load::BMP("model/world/connector/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/connector/connector.png"));
+	normalMap.push_back(Load::PNG("model/world/connector/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/field.map"));
-	textures.push_back(Load::BMP("model/world/field/field.bmp"));
-	normalMap.push_back(Load::BMP("model/world/field/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/field/field.png"));
+	normalMap.push_back(Load::PNG("model/world/field/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/floor.map"));
-	textures.push_back(Load::BMP("model/world/floor/floor.bmp"));
-	normalMap.push_back(Load::BMP("model/world/floor/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/floor/floor.png"));
+	normalMap.push_back(Load::PNG("model/world/floor/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/ground_floor.map"));
-	textures.push_back(Load::BMP("model/world/ground_floor/ground_floor.bmp"));
-	normalMap.push_back(Load::BMP("model/world/ground_floor/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/ground_floor/ground_floor.png"));
+	normalMap.push_back(Load::PNG("model/world/ground_floor/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/ground_and_first_floor.map"));
-	textures.push_back(Load::BMP("model/world/ground_and_first_floor/ground_and_first_floor.bmp"));
-	normalMap.push_back(Load::BMP("model/world/ground_and_first_floor/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/ground_and_first_floor/ground_and_first_floor.png"));
+	normalMap.push_back(Load::PNG("model/world/ground_and_first_floor/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/passage.map"));
-	textures.push_back(Load::BMP("model/world/passage/passage.bmp"));
-	normalMap.push_back(Load::BMP("model/world/passage/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/passage/passage.png"));
+	normalMap.push_back(Load::PNG("model/world/passage/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/pvcwindow.map"));
-	textures.push_back(Load::BMP("model/world/pvcwindow/pvcwindow.bmp"));
-	normalMap.push_back(Load::BMP("model/world/pvcwindow/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/pvcwindow/pvcwindow.png"));
+	normalMap.push_back(Load::PNG("model/world/pvcwindow/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/roof.map"));
-	textures.push_back(Load::BMP("model/world/roof/roof.bmp"));
-	normalMap.push_back(Load::BMP("model/world/roof/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/roof/roof.png"));
+	normalMap.push_back(Load::PNG("model/world/roof/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	// TO DO: normal map for track
 	models.push_back(Load::Obj("model/world/track.map"));
-	textures.push_back(Load::BMP("model/world/track/track.bmp"));
-	normalMap.push_back(Load::BMP("model/world/track/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/track/track.png"));
+	normalMap.push_back(Load::PNG("model/world/track/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/road_signs.map"));
-	textures.push_back(Load::BMP("model/world/road_signs/road_signs.bmp"));
-	normalMap.push_back(Load::BMP("model/world/road_signs/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/road_signs/road_signs.png"));
+	normalMap.push_back(Load::PNG("model/world/road_signs/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/start_finish.map"));
-	textures.push_back(Load::BMP("model/world/start_finish/start_finish.bmp"));
-	normalMap.push_back(Load::BMP("model/world/start_finish/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/start_finish/start_finish.png"));
+	normalMap.push_back(Load::PNG("model/world/start_finish/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	models.push_back(Load::Obj("model/world/test.obj"));
-	textures.push_back(Load::BMP("model/world/margin/margin.bmp"));
-	normalMap.push_back(Load::BMP("model/world/margin/normal.bmp"));
+	textures.push_back(Load::PNG("model/world/margin/margin.png"));
+	normalMap.push_back(Load::PNG("model/world/margin/normal.png"));
 	indexCount.push_back(Load::meshCount());
 
 	/* Light settings to tweak when using parallax
