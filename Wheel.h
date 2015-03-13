@@ -6,6 +6,7 @@
 #define S 0.01666666666f
 #define M 1.0f;
 
+class Track;
 
 class Wheel :
 	public Object
@@ -31,7 +32,9 @@ public:
 	GLuint& Model()			{ return model; };
 	unsigned int &Index()	{ return indexCount; };
 	float Radius()			{ return RADIUS; }
-
+	float& Velocity()		{ return velocity; }
+	void AddDamage()		{ damage += DAMAGEAMOUNT; }
+	void AddSpeedPenalty()	{ velocity *= velocityPenalty; }
 	~Wheel();
 
 protected:
@@ -49,8 +52,10 @@ private:
 	const float RADIUS = tyreDiameter/2;
 	const float AREA = tyreWidth * tyreDiameter;
 	const float MASS = 8.0f;
-		
 	
+	Track *raceTrack;
+
+	float velocityPenalty;
 	const float Cdrag = 0.9f;	// drag coefficient
 	const float Crolling = Cdrag * 10.0f; // rolling coefficient
 	const float Cbraking = 1.0f;
@@ -76,7 +81,7 @@ private:
 
 	float Trigger;
 	float rotationAngle;
-	float Velocity;				// Velocity
+	float velocity;				// Velocity
 	float Acceleration;			// Acceleration
 
 	float damage;
