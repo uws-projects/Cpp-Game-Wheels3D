@@ -45,9 +45,8 @@ void Wheel::Initialize()
 	cameraWidthZ = 0.0f;
 	cameraHeight = position.y*2.5f*80;
 	cameraZoom = 2.0f;
-	editingCameraPosition = false;
 	hugeZoom = false;
-	zoomAmount = 0.1f;
+	zoomAmount = 0.01f;
 
 	raceTrack = new Track(this);
 	raceTrack->Initialize();
@@ -300,16 +299,7 @@ void Wheel::HandleEvents()
 			// update toggles
 			if (JOY_RB == SDL_RELEASED) canGearUp = true;
 			if (JOY_LB == SDL_RELEASED) canGearDown = true;
-
-			// camera controls
-			// pressing select enables editing camera position
-			if (JOY_SELECT)
-			{
-				editingCameraPosition = !editingCameraPosition;
-				SDL_Delay(50);
-			}
-
-		
+	
 			// pressing start enables fast zoom
 			if (JOY_START)
 			{
@@ -319,11 +309,19 @@ void Wheel::HandleEvents()
 				else zoomAmount = 0.1f;
 			}
 
-			if (editingCameraPosition) {
-				if (RightStickYvalue > 10) if (cameraHeight > 0.1f) cameraHeight -= zoomAmount;
-				if (RightStickYvalue < -10) cameraHeight += zoomAmount;
-				if (RightStickXvalue > 10) if (cameraZoom < 10.0f) cameraZoom += zoomAmount;
-				if (RightStickXvalue< -10) if (cameraZoom > 0.1f) cameraZoom -= zoomAmount;
+			{
+				if (RightStickYvalue > 10) if (cameraHeight > 0.1f) {
+					cameraHeight -= zoomAmount; std::cout << "Height : " << cameraHeight << "\n";
+				}
+				if (RightStickYvalue < -10) {
+					cameraHeight += zoomAmount; std::cout << "Height : " << cameraHeight << "\n";
+				}
+				if (RightStickXvalue > 10) if (cameraZoom < 10.0f) {
+					cameraZoom += zoomAmount; std::cout << "Zoom : " << cameraZoom << "\n";
+				}
+				if (RightStickXvalue< -10) if (cameraZoom > 0.1f) {
+					cameraZoom -= zoomAmount; std::cout << "Zoom : " << cameraZoom << "\n";
+				}
 			}
 			cameraTurn = -RightStickYvalue;
 		}

@@ -103,7 +103,6 @@ private:
 	float cameraZoom;
 	float cameraWidthX;
 	float cameraWidthZ;
-	bool editingCameraPosition;
 	bool hugeZoom;
 	bool collidedLeftX = false;
 	bool collidedRightX = false;
