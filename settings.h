@@ -12,10 +12,7 @@
 #include <iostream>
 #include "Light.h"
 #include "Cube.h"
-//#include "Camera.h"
 #include "Material.h"
-
-//#include "Wheel.h"
 
 #ifndef RADIANS
 #define RADIANS 0.017453293

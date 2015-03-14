@@ -31,7 +31,7 @@ void Wheel::Initialize()
 
 	light.position = glm::vec4(position, 1.0f);
 
-	trackSection = 0;
+	
 	direction = 0;
 	rotationAngle = 0;
 	Acceleration = 0;
@@ -51,11 +51,6 @@ void Wheel::Initialize()
 	raceTrack = new Track(this);
 	raceTrack->Initialize();
 
-	for (int section = 0; section < 32; section++)
-	{
-		lap[section] = INCOMPLETE;
-	}
-
 	initializePhysics();
 
 	velocityPenalty = 0.95f;
@@ -65,14 +60,13 @@ void Wheel::Initialize()
 
 void Wheel::Render()
 {
-
 	Shader::Push();
 	{
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(GL_BACK);
-		Shader::Use(Shader::Bump());
-		Shader::AddLight(light);
-		Shader::AddMaterial(material);
+		//Shader::Use(Shader::Bump());
+		//Shader::AddLight(light);
+		//Shader::AddMaterial(material);
 		
 		Shader::Top() = glm::translate(Shader::Top(), position);
 		Shader::Top() = glm::rotate(Shader::Top(), -direction, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -94,6 +88,7 @@ void Wheel::Render()
 		glBindVertexArray(0);
 		glDisable(GL_CULL_FACE);
 	}
+	Shader::Pop();
 	Shader::Pop();
 }
 
@@ -249,13 +244,12 @@ void Wheel::HandleEvents()
 		else 
 		{
 			raceStarted = true; 
-			
-			raceTrack->StartTimer();
 		}
+		if (raceStarted) startTime = SDL_GetTicks();
+		std::cout << "\n\n\n\"" << startTime <<"\n\n\n";
 	}
 	else
 	{
-
 		if (JOY->JoysticksInitialised())
 		{
 

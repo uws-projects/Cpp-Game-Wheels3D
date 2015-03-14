@@ -1,8 +1,5 @@
 #include "Track.h"
 
-// TO DO:: fix pointer function!
-
-
 void Track::Initialize()
 {
 	raceComplete = false;

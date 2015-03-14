@@ -27,7 +27,7 @@ struct Material
 	float shininess;
 };
 
-uniform Light light[5];
+uniform Light light[4];
 uniform Material material;
 
 uniform mat4 ModelViewMatrix;
@@ -57,7 +57,7 @@ vec3 LightFunction(Light light)
 	vec3 diffuseI = Ld * Kd * max ( dot (norm, s), 0.0);
 	float attenuation = (attConst + attLinear * D + attQuadratic * D * D);
 	if (attenuation == 0) attenuation = 1.0;
-	return diffuseI;//attenuation;
+	return diffuseI/attenuation;
 }
 
 void main()
@@ -71,7 +71,7 @@ void main()
 	
 	
 	LightIntensity = vec3(0);
-	for (int i = 0 ; i < 3 ; i++ )
+	for (int i = 0 ; i < 4 ; i++ )
 	{
 		LightIntensity += LightFunction(light[i]);
 	}

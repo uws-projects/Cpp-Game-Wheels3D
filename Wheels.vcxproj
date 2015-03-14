@@ -83,6 +83,7 @@
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Cube.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Load.h" />
@@ -103,6 +104,7 @@
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Cube.cpp" />
+    <ClCompile Include="HUD.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Load.cpp" />
     <ClCompile Include="main.cpp" />
@@ -123,6 +125,8 @@
     <None Include="shaders\parallax.vert" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
+    <None Include="shaders\texture.frag" />
+    <None Include="shaders\texture.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

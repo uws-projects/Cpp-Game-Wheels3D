@@ -33,6 +33,7 @@ public:
 	unsigned int &Index()	{ return indexCount; };
 	float Radius()			{ return RADIUS; }
 	float& Velocity()		{ return velocity; }
+	double& StartTimer()	{ return startTime; }
 	void AddDamage()		{ damage += DAMAGEAMOUNT; }
 	void AddSpeedPenalty()	{ velocity *= velocityPenalty; }
 	~Wheel();
@@ -104,19 +105,13 @@ private:
 	float cameraWidthX;
 	float cameraWidthZ;
 	bool hugeZoom;
-	bool collidedLeftX = false;
-	bool collidedRightX = false;
-	bool collidedLeftZ = false;
-	bool collidedRightZ = false;
 	float zoomAmount;
+
+	double startTime;
 
 	bool canGearUp;
 	bool canGearDown;
 
-	int trackSection;
-	bool lap[32];
-
-	void checkTrack(int &section);
 	void initializePhysics();
 	void updatePhysics();
 	void gearUp();

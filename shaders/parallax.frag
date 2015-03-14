@@ -170,7 +170,8 @@ vec4 LightCalculation(Light light, vec2 T, vec3 lightTangent, float distance)
 	
 	float shadow =1.000;//ShadowCalculation(light.position);
 
-	return vec4((diffuseI* 2.2).rgb, 1.0f );
+	return vec4((diffuseI* 1.6).rgb, 1.0f );
+	//return vec4(diffuseI).rgb, 1.0f);
 }
 
 

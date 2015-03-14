@@ -4,6 +4,7 @@
 #include "Skybox.h"
 #include "World.h"
 #include "Camera.h"
+#include "HUD.h"
 
 
 class Play: 
@@ -28,6 +29,7 @@ private:
 	Camera *camera;
 	Skybox *skybox;
 	World *world;
+	HUD *speedometer;
 
 	std::vector <Object*> m_object;
 };

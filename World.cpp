@@ -98,34 +98,39 @@ void World::Initialize()
 	/* Light settings to tweak when using parallax
 	maybe adjust materials, light position, attenuation... etc.
 	*/
-	float quadratic = 0.01f;
+	quadratic = 0.06f;
+	linear = 0.0f;
+	constant = 1.0f;
 	
 	left.position = glm::vec4(-95.0f, 1000.0f, -1000.0f, 1.0f);
-	left.constant = 0.0f;
-	left.linear = 0.0f;
+	left.constant = constant;
+	left.linear = linear;
 	left.quadratic = quadratic;
 	right.position = glm::vec4(-95.0f, 1000.0f, 2250.0f, 1.0f);
-	right.constant = 0.0f;
-	right.linear = 0.0f;
+	right.constant = constant;
+	right.linear = linear;
 	right.quadratic = quadratic;
 	up.position = glm::vec4(1900.0f, 1000.0f, 125.0f, 1.0f);
-	up.constant = 0.0f;
-	up.linear = 0.0f;
+	up.constant = constant;
+	up.linear = linear;
 	up.quadratic = quadratic;
 	down.position = glm::vec4(-1900.0f, 1000.0f, -125.0f, 1.0f);
-	down.constant = 0.0f;
-	down.linear = 0.0f;
+	down.constant = constant;
+	down.linear = linear;
 	down.quadratic = quadratic;
 	material.Ka = glm::vec4(1.0f);
 }
 
 bool enabled = true;
-float offset = 0.00f;
 float scale = 0.02f;
 
 void World::Render()
 {
-	
+	left.quadratic = quadratic;
+	right.quadratic = quadratic;
+	up.quadratic = quadratic;
+	down.quadratic = quadratic;
+
 	Shader::Push();
 	{
 		/* Light tweaking here too, depending how many lights to send 
@@ -134,10 +139,10 @@ void World::Render()
 		Shader::DiffusePerVertex() for omnilight with texture
 		*/
 		Shader::Use(Shader::DiffusePerVertex());
-		Shader::AddLight(left, "light[0]");
+		Shader::AddLight(left,	"light[0]");
 		Shader::AddLight(right, "light[1]");
-		Shader::AddLight(up, "light[2]");
-		Shader::AddLight(down, "light[3]");
+		Shader::AddLight(up,	"light[2]");
+		Shader::AddLight(down,	"light[3]");
 		Shader::AddMaterial(material);
 
 		Shader::SetUniform("ModelViewMatrix",Shader::ModelViewMatrix());

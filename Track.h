@@ -23,6 +23,7 @@ public:
 	void HandleEvents() {};
 	
 	void StartTimer()		{ startTime = SDL_GetTicks(); }
+	double getStartTime()	{ return startTime; }
 
 	bool ContactRightX()	{ return collidedRightX; }
 	bool ContactLeftX()		{ return collidedLeftX; }

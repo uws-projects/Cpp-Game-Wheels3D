@@ -240,7 +240,7 @@ GLuint Load::Text(const char * str) {
 	if (TTF_Init() == -1)
 		std::cerr << "TTF failed to initialise.\n";
 
-	TTF_Font *font = TTF_OpenFont("MavenPro-Regular.ttf", 24);
+	TTF_Font *font = TTF_OpenFont("model/MavenPro-Regular.ttf", 24);
 	if (font == NULL)
 		std::cerr << "Failed to open font.\n";
 

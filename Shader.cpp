@@ -1,9 +1,10 @@
 #include "Shader.h"
 #include "Load.h"
+#include "settings.h"
 
 GLuint Shader::DPVSL;
 GLuint Shader::BUMP;
-//GLuint Shader::PARTICLES;
+GLuint Shader::SCRELEM;
 GLuint Shader::SKYBOX;
 GLuint Shader::activeProgram = Shader::DPVSL;
 std::stack<glm::mat4> Shader::m_matrix;
@@ -23,7 +24,7 @@ Shader::Shader()
 void Shader::Start()
 {
 	BUMP		= Load::Shader(".\\shaders\\parallax");
-	//PARTICLES	= Load::Shader("particles");
+	SCRELEM		= Load::Shader(".\\shaders\\texture");
 	DPVSL		= Load::Shader(".\\shaders\\diffuse");
 	SKYBOX		= Load::Shader(".\\shaders\\skybox");
 	// set default shader here:
@@ -33,7 +34,7 @@ void Shader::Start()
 	m_IdentityMatrix = glm::mat4(1.0);
 	m_ViewMatrix = m_IdentityMatrix;
 	m_ModelViewMatrix = m_IdentityMatrix;
-	m_ProjectionMatrix = glm::perspective(60.0f, 1270.0f/ 720.0f, 0.001f, 1500.0f);
+	m_ProjectionMatrix = glm::perspective(60.0f, WIDTH/ HEIGHT, 0.001f, 1500.0f);
 	m_NormalMatrix = glm::transpose(glm::inverse(glm::mat3(m_ModelViewMatrix)));
 }
 

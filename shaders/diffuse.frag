@@ -16,5 +16,5 @@ layout(location = 0) out vec4 out_Color;
 
 void main()
 {
-	out_Color = texture2D(tex, ex_TexCoord);//*vec4(LightIntensity, 1.0);
+	out_Color = texture2D(tex, ex_TexCoord)*vec4(LightIntensity*1.13, 1.0);
 }

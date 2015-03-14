@@ -13,17 +13,25 @@ bool Play::OnEnter()
 	skybox = new Skybox;
 	world = new World;
 	player = new Wheel;
+	speedometer = new HUD;
 	Shader::Start();
+	
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);
 	m_object.push_back(world);
+	m_object.push_back(speedometer);
 	m_object.push_back(player);
+	
+
 	
 	for (unsigned i = 0; i < m_object.size(); i++)
 	{
 		m_object[i]->Initialize();
 	}
+
+	speedometer->SetSpeed(&player->Velocity());
+	speedometer->SetTimer(&player->StartTimer());
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);

@@ -14,7 +14,7 @@ public:
 	static void Use(GLuint program)			{ glUseProgram(0); activeProgram = program;  glUseProgram(activeProgram); }
 	static GLuint& DiffusePerVertex()		{ return DPVSL; }
 	static GLuint& Bump()					{ return BUMP; }
-	//static GLuint& Particles()				{ return PARTICLES; }
+	static GLuint& ScreenHUD()				{ return SCRELEM; }
 	static GLuint& Skybox()					{ return SKYBOX; }
 	static GLuint& Current()				{ return activeProgram; }
 	
@@ -52,8 +52,8 @@ public:
 private:
 
 	static GLuint DPVSL;			// diffuse per vertex shading lighting
-	static GLuint BUMP;			// parallax
-	//static GLuint PARTICLES;		// particle shader
+	static GLuint BUMP;				// parallax
+	static GLuint SCRELEM;			// HUD shader
 	static GLuint SKYBOX;			// skybox shader
 	static GLuint activeProgram;
 	static std::stack<glm::mat4> m_matrix;
