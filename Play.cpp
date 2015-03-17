@@ -13,12 +13,20 @@ bool Play::OnEnter()
 	skybox = new Skybox;
 	world = new World;
 	player = new Wheel;
+	powerupHappyWheel = new Powerup;
+	powerupTwister = new Powerup;
+
+	powerupHappyWheel->Create("happywheel", glm::vec3(37.0f, 0.3f, 30.0f));
+	powerupTwister->Create("twister", glm::vec3(38.0f, 0.3f, 30.0f));
+
 	Shader::Start();
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);
 	m_object.push_back(world);
 	m_object.push_back(player);
+	m_object.push_back(powerupHappyWheel);
+	m_object.push_back(powerupTwister);
 	
 	for (unsigned i = 0; i < m_object.size(); i++)
 	{

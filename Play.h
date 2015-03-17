@@ -4,7 +4,8 @@
 #include "Skybox.h"
 #include "World.h"
 #include "Camera.h"
-
+#include "Powerup.h"
+#include "Cube.h"
 
 class Play: 
 	public AbstractState
@@ -28,6 +29,8 @@ private:
 	Camera *camera;
 	Skybox *skybox;
 	World *world;
+	Powerup *powerupHappyWheel;
+	Powerup *powerupTwister;
 
 	std::vector <Object*> m_object;
 };
