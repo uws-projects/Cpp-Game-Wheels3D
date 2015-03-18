@@ -17,8 +17,8 @@ bool Play::OnEnter()
 	powerupHappyWheel = new Powerup;
 	powerupTwister = new Powerup;
 
-	powerupHappyWheel->Create("happywheel", glm::vec3(37.0f, 0.3f, 30.0f));
-	powerupTwister->Create("twister", glm::vec3(38.0f, 0.3f, 30.0f));
+	powerupHappyWheel->Create("turbo", glm::vec3(37.0f, 0.3f, 30.0f));
+	powerupTwister->Create("instantstop", glm::vec3(38.0f, 0.3f, 30.0f));
 
 	Shader::Start();
 
@@ -36,6 +36,7 @@ bool Play::OnEnter()
 
 	speedometer->SetSpeed(&player->Velocity());
 	speedometer->SetTimer(&player->StartTimer());
+	speedometer->SetGear(&player->Gear());
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);

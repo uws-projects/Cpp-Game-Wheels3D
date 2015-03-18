@@ -72,15 +72,7 @@ private:
 
 			if (complete) {
 				startTime = SDL_GetTicks() - startTime;
-				int minutes = (int)startTime / 60000;
-				int seconds = (int)(startTime - (minutes * 60000)) / 1000;
-				int mili = (int)(startTime - minutes * 60000 - seconds * 1000);
-				std::cout << "\nRace completed in ";
-				if (minutes < 10) std::cout << "0" << minutes << ":";
-				else std::cout << minutes << ":";
-				if (seconds < 10) std::cout << "0" << seconds << ":";
-				else std::cout << seconds << ":";
-				std::cout << mili;
+				wheel->DetachCamera();
 			}
 		}
 	}

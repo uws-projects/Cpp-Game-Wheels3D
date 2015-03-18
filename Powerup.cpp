@@ -110,7 +110,7 @@ void Powerup::Render()
 		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
-	rotationSpeed += 2.0f; //Power-up rotation speed
+	rotationSpeed += 1.5f; //Power-up rotation speed
 	Shader::Pop();
 
 }

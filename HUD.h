@@ -14,6 +14,7 @@ public:
 	void HandleEvents() {}
 	void SetSpeed(float *Speed) { speed = Speed; }
 	void SetTimer(double *Time) { timer = Time; }
+	void SetGear(int *Gear)		{ gear = Gear; }
 
 	std::string text;
 	GLuint plane;
@@ -22,8 +23,10 @@ public:
 	Material material;
 	float* speed;
 	double* timer;
+	int* gear;
 	GLuint SpeedTexture;
 	GLuint TimerTexture;
-
+	GLuint GearTexture;
+	GLuint BackgroundTexture;
 };
 

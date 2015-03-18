@@ -34,8 +34,11 @@ public:
 	float Radius()			{ return RADIUS; }
 	float& Velocity()		{ return velocity; }
 	double& StartTimer()	{ return startTime; }
+	int& Gear()				{ return currentGear; }
+	
 	void AddDamage()		{ damage += DAMAGEAMOUNT; }
 	void AddSpeedPenalty()	{ velocity *= velocityPenalty; }
+	void DetachCamera()		{ detachedCamera = true; }
 	~Wheel();
 
 protected:
@@ -59,7 +62,7 @@ private:
 	float velocityPenalty;
 	const float Cdrag = 0.9f;	// drag coefficient
 	const float Crolling = Cdrag * 10.0f; // rolling coefficient
-	const float Cbraking = 1.0f;
+	const float Cbraking = 10.0f;
 	
 	const float RHOAIR = 1.29f; // density of air
 	const float DT = 0.016f;
@@ -71,7 +74,7 @@ private:
 	const float DAMAGEAMOUNT = 0.0f;
 
 	float gears[8];		// 6 gears + reverse + neutral
-	unsigned currentGear;
+	int currentGear;
 	int EnginePower;
 	float F_long;				// longitudinal force
 	float F_traction;			// traction force
@@ -111,6 +114,8 @@ private:
 
 	bool canGearUp;
 	bool canGearDown;
+	bool detachedCamera;			// used when passing the finish line
+
 
 	void initializePhysics();
 	void updatePhysics();

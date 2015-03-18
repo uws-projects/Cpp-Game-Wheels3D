@@ -40,6 +40,7 @@ void Wheel::Initialize()
 	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f-RADIUS);
 
 	damage = 0.0f;
+	detachedCamera = false;
 
 	cameraWidthX = 0.0f;
 	cameraWidthZ = 0.0f;
@@ -124,10 +125,21 @@ void Wheel::Update()
 	if (currentGear == 2 && velocity < 3) currentGear = 1;
 
 	// normal camera positioning
-	cameraPosition = moveForward(position, direction, 1.0f, cameraTurn);
-	cameraPosition.y = cameraHeight;
-	cameraPosition.x += cameraWidthX; 
-	cameraPosition.z += cameraWidthZ;
+	if (!detachedCamera)
+	{
+		cameraPosition = moveForward(position, direction, 1.0f, cameraTurn);
+		cameraPosition.y = cameraHeight;
+		cameraPosition.x += cameraWidthX;
+		cameraPosition.z += cameraWidthZ;
+	}
+	else
+	{
+		cameraHeight += 0.1f;
+		cameraPosition.y = cameraHeight;
+		if (cameraHeight > 15.0f)
+			SDL_Quit();
+	}
+	
 	cameraAt = glm::vec3(position.x + cameraZoom*sin((360.0f - direction)*DEGREES), position.y, position.z + cameraZoom*cos((360.0f - direction)*DEGREES));
 
 	// camera repositioning on collision
@@ -181,7 +193,6 @@ void Wheel::updatePhysics()
 	// calculate resistance forces
 	F_drag = -Cdrag * 0.5f * AREA * RHOAIR * velocity;
 	F_rr = -Crolling * velocity;
-	float F_resistance = F_drag + F_rr;
 	float revolutions = velocity / 2 * PI;
 	if (abs(F_long) < 0.4f) F_long = 0.0f;
 
@@ -193,38 +204,63 @@ void Wheel::updatePhysics()
 		velocity = 0.0f; 
 	}
 
-	if (currentGear == REVERSE) {
-		u = -1;
-		if (EnginePower < 0)
-		{
-			int brake = abs(EnginePower);
-			if (brake > 80) { revolutions = 0; }
-			F_braking = -u * Cbraking * brake;
-			F_long = F_braking + F_resistance;
-		}
-		else
-			F_traction = u * EnginePower * gears[currentGear];
+	switch (currentGear)
+	{
+	case 7:	// reverse case
+	{
+				u = -1;
+				if (EnginePower < 0)
+				{
+					int brake = abs(EnginePower);
+					if (brake > 90) { revolutions = 0; }
+					if (abs(velocity) > 0)
+						F_braking = -u * Cbraking;
+					F_long = F_braking + F_drag + F_rr;
+				}
+				else
+				{
+					F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
+					F_long = F_traction + F_drag + F_rr;
+				}
 	}
-	else {
-		u = 1;
+		break;
+	case 0:	// neutral case
+	{
+				if (EnginePower < 0)
+				{
+					int brake = abs(EnginePower);
+					if (brake > 90) { revolutions = 0; }
+					if (abs(velocity) > 0)
+						F_braking = -u * Cbraking;
+					F_long = F_braking + F_drag + F_rr;
+				}
+				else
+				{
+					F_long = F_drag + F_rr;
+				}
 	}
-	if (currentGear != NEUTRAL) {
-		// calculate longitudinal force when braking or not
-		if (EnginePower < 0)
-		{
-			int brake = abs(EnginePower);
-			if (brake > 80) { revolutions = 0; }
-			F_braking = -u * Cbraking * brake;
-			F_long = F_braking + F_resistance;
-		}
-		else
-		{
-			// calculate traction force
-			F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100-damage);
+		break;
+	default: // regular gear
+	{
+				 u = 1;
+				 if (EnginePower < 0)
+				 {
+					 int brake = abs(EnginePower);
+					 if (brake > 90) { revolutions = 0; }
+					 if (abs(velocity) > 0)
+						 F_braking = -u * Cbraking;
+					 F_long = F_braking + F_drag + F_rr;
+				 }
+				 else
+				 {
+					 F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
+					 F_long = F_traction + F_drag + F_rr;
+				 }
 
-			F_long = F_traction + F_resistance;
-		}
 	}
+		break;
+	}
+
 	rotationAngle += revolutions;
 
 	// report section, uncomment as necessary
@@ -246,7 +282,6 @@ void Wheel::HandleEvents()
 			raceStarted = true; 
 		}
 		if (raceStarted) startTime = SDL_GetTicks();
-		std::cout << "\n\n\n\"" << startTime <<"\n\n\n";
 	}
 	else
 	{
