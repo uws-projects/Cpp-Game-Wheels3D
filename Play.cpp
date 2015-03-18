@@ -14,17 +14,21 @@ bool Play::OnEnter()
 	world = new World;
 	player = new Wheel;
 	speedometer = new HUD;
+	powerupHappyWheel = new Powerup;
+	powerupTwister = new Powerup;
+
+	powerupHappyWheel->Create("happywheel", glm::vec3(37.0f, 0.3f, 30.0f));
+	powerupTwister->Create("twister", glm::vec3(38.0f, 0.3f, 30.0f));
+
 	Shader::Start();
-	
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);
 	m_object.push_back(world);
-	m_object.push_back(speedometer);
+	m_object.push_back(powerupHappyWheel);
+	m_object.push_back(powerupTwister);
 	m_object.push_back(player);
-	
-
-	
+	m_object.push_back(speedometer);
 	for (unsigned i = 0; i < m_object.size(); i++)
 	{
 		m_object[i]->Initialize();
@@ -57,7 +61,7 @@ void Play::HandleEvents()
 	}
 
 	if (PRESSING(SDL_SCANCODE_ESCAPE))			Application::Instance()->Quit();
-	
+
 	if (PRESSING(SDL_SCANCODE_1)) {
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDisable(GL_CULL_FACE);
@@ -72,7 +76,7 @@ void Play::Render()
 {
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
 	Shader::Push(Shader::Identity());
 	{
 		for (int i = 0; i != m_object.size(); i++)

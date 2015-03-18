@@ -5,9 +5,10 @@
 #include "World.h"
 #include "Camera.h"
 #include "HUD.h"
+#include "Powerup.h"
+#include "Cube.h"
 
-
-class Play: 
+class Play :
 	public AbstractState
 {
 public:
@@ -24,12 +25,14 @@ public:
 	void Clean();
 
 private:
-	
+
 	Wheel *player;
 	Camera *camera;
 	Skybox *skybox;
 	World *world;
 	HUD *speedometer;
+	Powerup *powerupHappyWheel;
+	Powerup *powerupTwister;
 
 	std::vector <Object*> m_object;
 };

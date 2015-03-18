@@ -21,7 +21,7 @@ public:
 	void Render() {};
 	void Update();
 	void HandleEvents() {};
-	
+
 	void StartTimer()		{ startTime = SDL_GetTicks(); }
 	double getStartTime()	{ return startTime; }
 
@@ -38,11 +38,11 @@ private:
 	bool complete;		// temp flag to check if sector is complete
 	bool lap[32];		// flags for each complete section of the track
 	Wheel* wheel;		// object to check collisions against
-	
+
 	void(Track::*pointerArray[32])();	// array of pointer to member function with each
-						// element of the array representing one sector of the track that has
-						// to be checked
-	
+	// element of the array representing one sector of the track that has
+	// to be checked
+
 	unsigned int section;
 
 	void checkTrack();
@@ -72,16 +72,15 @@ private:
 
 			if (complete) {
 				startTime = SDL_GetTicks() - startTime;
-				int minutes = (int) startTime / 60000;
-				int seconds = (int) (startTime - (minutes * 60000)) / 1000;
-				int mili = (int) (startTime - minutes * 60000 - seconds * 1000);
+				int minutes = (int)startTime / 60000;
+				int seconds = (int)(startTime - (minutes * 60000)) / 1000;
+				int mili = (int)(startTime - minutes * 60000 - seconds * 1000);
 				std::cout << "\nRace completed in ";
 				if (minutes < 10) std::cout << "0" << minutes << ":";
 				else std::cout << minutes << ":";
 				if (seconds < 10) std::cout << "0" << seconds << ":";
 				else std::cout << seconds << ":";
 				std::cout << mili;
-				std::cin.ignore();
 			}
 		}
 	}
@@ -270,6 +269,6 @@ private:
 		if (wheel->Position().x < 35.9921f + wheel->Radius()) { wheel->Position().x = 35.9921f + wheel->Radius(); wheel->AddSpeedPenalty(); collidedRightX = true; wheel->AddDamage(); }
 		if (wheel->Position().x > 38.4921f) { section = 30; }
 		if (wheel->Position().z > 4.73671f) { lap[section] = COMPLETE; section = 0; }
-	}	
+	}
 };
 

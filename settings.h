@@ -19,11 +19,11 @@
 #endif
 
 #ifndef WIDTH					// width of the screen
-#define WIDTH 1280.0f			
+#define WIDTH 1680.0f			
 #endif
 
 #ifndef HEIGHT					// height of the screen
-#define HEIGHT 720.0f
+#define HEIGHT 945.0f
 #endif
 
 #ifndef CENTER					// used for centering window position
@@ -58,5 +58,5 @@
 #define LEFTSTICK 1
 #define RIGHTSTICK 2
 
-//#define FULLSCREEN true
-#define FULLSCREEN false
+#define FULLSCREEN true
+//#define FULLSCREEN false
