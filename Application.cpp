@@ -1,5 +1,6 @@
 #include "Application.h"
-#include "Play.h"
+//#include "Play.h"
+#include "Logo.h"
 
 Application* Application::m_instance = 0;
 
@@ -54,7 +55,7 @@ bool Application::Initialize()
 
 	m_isRunning = true;
 	m_stateMachine = new StateMachine();
-	m_stateMachine->PushState(new Play());
+	m_stateMachine->PushState(new Logo());
 	return true;
 }
 

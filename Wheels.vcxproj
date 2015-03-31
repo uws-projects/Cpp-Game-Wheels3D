@@ -87,6 +87,7 @@
     <ClInclude Include="InputHandler.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Load.h" />
+    <ClInclude Include="Logo.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Play.h" />
@@ -108,6 +109,7 @@
     <ClCompile Include="HUD.cpp" />
     <ClCompile Include="InputHandler.cpp" />
     <ClCompile Include="Load.cpp" />
+    <ClCompile Include="Logo.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Powerup.cpp" />

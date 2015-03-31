@@ -12,17 +12,7 @@ public:
 	void Initialize();
 	void Render();
 	void Update() {} ;
-	void HandleEvents()
-	{
-		if (JOY_X) {
-			std::cout << "X executed \n" << quadratic;
-			quadratic += 0.01f; linear = quadratic;
-		}
-		if (JOY_A) { 
-			std::cout << "A executed \n" << quadratic; 
-			quadratic -= 0.01f; linear = quadratic;
-		};
-	}
+	void HandleEvents() {};
 	void UseLight(Light l) { up = l; }
 	void UseMaterial(Material m) { material = m; }
 	void setCamera(Camera* that) { forShader = that; }

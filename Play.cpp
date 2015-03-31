@@ -8,7 +8,7 @@ Play::Play()
 
 bool Play::OnEnter()
 {
-	INPUT->InitialiseJoysticks();
+	//INPUT->InitialiseJoysticks();
 	camera = new Camera;
 	skybox = new Skybox;
 	world = new World;

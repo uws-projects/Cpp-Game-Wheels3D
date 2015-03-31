@@ -15,6 +15,8 @@ public:
 		return m_instance;
 	}
 
+	StateMachine* GetStateMachine(){ return m_stateMachine; }
+
 	bool Initialize();
 	bool IsRunning() { return m_isRunning; }
 	
