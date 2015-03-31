@@ -1,5 +1,4 @@
 #include "Application.h"
-//#include "Play.h"
 #include "Logo.h"
 
 Application* Application::m_instance = 0;

@@ -20,7 +20,7 @@ bool Play::OnEnter()
 	powerupHappyWheel->Create("turbo", glm::vec3(37.0f, 0.3f, 30.0f));
 	powerupTwister->Create("instantstop", glm::vec3(38.0f, 0.3f, 30.0f));
 
-	Shader::Start();
+	//Shader::Start();
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);

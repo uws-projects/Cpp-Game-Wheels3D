@@ -1,6 +1,7 @@
 #pragma once
 #include "Wheel.h"
 #include "Track.h"
+#include "Application.h"
 
 #ifndef COMPLETE
 #define COMPLETE true
@@ -137,7 +138,7 @@ void Wheel::Update()
 		cameraHeight += 0.1f;
 		cameraPosition.y = cameraHeight;
 		if (cameraHeight > 15.0f)
-			SDL_Quit();
+			Application::Instance()->Quit();
 	}
 	
 	cameraAt = glm::vec3(position.x + cameraZoom*sin((360.0f - direction)*DEGREES), position.y, position.z + cameraZoom*cos((360.0f - direction)*DEGREES));

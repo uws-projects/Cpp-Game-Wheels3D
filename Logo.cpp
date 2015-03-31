@@ -1,6 +1,6 @@
 #include "Logo.h"
 #include "Application.h"
-#include "Play.h"
+#include "Menu.h"
 
 #define DELAY 5000
 
@@ -64,14 +64,14 @@ void Logo::Update()
 	// update the total time that past since beginning 
 	if (totalTime > DELAY)		// if 5 seconds passed go to menu
 	{
-		Application::Instance()->GetStateMachine()->PushState(new Play());
+		Application::Instance()->GetStateMachine()->PushState(new Menu());
 	}
 	if (transparency < 1.0f) {
 		transparency += (float) (totalTime / 300000.0f);	// if it`s transparent make it visible
 		std::cout << "\n totalTime: " << totalTime << " result: " <<  (float) totalTime / 300000.0f;
 		std::cout << "\n transparency: " << transparency;
 	}
-	else transparency = 1.0f;		// 
+	else transparency = 1.0f;
 	Shader::SetUniform("alfa", transparency);
 }
 
@@ -99,10 +99,10 @@ void Logo::HandleEvents()
 	// we can skip to next state by pressing either escape or start button on gamepad
 	if (JOY->JoysticksInitialised()) 
 	{
-		if (JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
+		if (JOY_A || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SDL_Delay(200);
-			Application::Instance()->GetStateMachine()->PushState(new Play());
+			Shader::SetUniform("alfa", 1.0f);
+			Application::Instance()->GetStateMachine()->PushState(new Menu());
 		}	
 	}
 	else
@@ -110,8 +110,7 @@ void Logo::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SDL_Delay(200);
-			Application::Instance()->GetStateMachine()->PushState(new Play());
+			Application::Instance()->GetStateMachine()->PushState(new Menu());
 		}
 	}
 
