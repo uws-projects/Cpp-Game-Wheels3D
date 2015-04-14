@@ -21,7 +21,6 @@ bool raceStarted = false;
 
 void Wheel::Initialize()
 {
-	//firstPersonCamera.Initialize();
 	model = Load::Obj(".\\model\\wheels_ultimul.obj");
 	//model = Load::Obj(".\\model\\world\\roata.obj");
 	indexCount = Load::meshCount();
@@ -42,6 +41,8 @@ void Wheel::Initialize()
 
 	damage = 0.0f;
 	detachedCamera = false;
+	canControl = false;
+	canRace = false;
 
 	cameraWidthX = 0.0f;
 	cameraWidthZ = 0.0f;
@@ -54,8 +55,6 @@ void Wheel::Initialize()
 	raceTrack->Initialize();
 
 	initializePhysics();
-
-	velocityPenalty = 0.95f;
 
 	glEnable(GL_CULL_FACE);
 }
@@ -115,11 +114,23 @@ void Wheel::Update()
 	// comment next line to disable collisions
 	raceTrack->Update();
 
+	// gearbox automatic down shifting
 	if (currentGear == 6 && velocity < 17) currentGear = 5;
 	if (currentGear == 5 && velocity < 14) currentGear = 4;
-	if (currentGear == 4 && velocity < 11) currentGear = 3;
+	if (currentGear == 4 && velocity < 10) currentGear = 3;
 	if (currentGear == 3 && velocity < 6) currentGear = 2;
 	if (currentGear == 2 && velocity < 3) currentGear = 1;
+
+	// gearbox automatic up shifting if enabled
+	if (automaticGearBox)
+	{
+		if (currentGear == 1 && velocity > 3) currentGear = 2;
+		if (currentGear == 2 && velocity > 6) currentGear = 3;
+		if (currentGear == 3 && velocity > 10) currentGear = 4;
+		if (currentGear == 4 && velocity > 14) currentGear = 5;
+		if (currentGear == 5 && velocity > 17) currentGear = 6;
+
+	}
 
 	// normal camera positioning
 	if (!detachedCamera)
@@ -131,6 +142,7 @@ void Wheel::Update()
 	}
 	else
 	{
+		canControl = false;
 		cameraHeight += 0.1f;
 		cameraPosition.y = cameraHeight;
 		if (cameraHeight > 15.0f)
@@ -150,11 +162,16 @@ void Wheel::Update()
 	if (raceTrack->ContactRightZ()) { if (cameraWidthZ < CAMERAMAXIMUMDISPLACEMENT) cameraWidthZ += CAMERACOLLISIONSPEED; }
 	else if (cameraWidthZ > 0) cameraWidthZ -= CAMERACOLLISIONSPEED;
 	
+
 }
 
 void Wheel::initializePhysics()
 {
+	// Set gearbox to manual or automatic; 
+	automaticGearBox = true;
+	// Set in neutral
 	currentGear = NEUTRAL;
+	// Reset forces and speed
 	velocity = 0.0f;
 	Acceleration = 0.0f;
 	F_traction = 0.0f;
@@ -162,10 +179,13 @@ void Wheel::initializePhysics()
 	F_drag = 0.0f;
 	F_rr = 0.0f;
 	F_braking = 0.0f;
+	// Set direction forward
 	u = 1.0f;
+	// Initialize Engine Power and joystick trigger value
 	EnginePower = 0;
 	Trigger = 0.0f; 
 
+	// Set gear ratios
 	gears[0] = 0.00f;
 	gears[1] = 0.50f;
 	gears[2] = 0.80f;
@@ -175,7 +195,7 @@ void Wheel::initializePhysics()
 	gears[6] = 1.82f;
 	gears[7] = 0.50f;
 	canGearDown = true;
-	canGearUp = true;
+	canGearUp = false;
 }
 
 void Wheel::updatePhysics()
@@ -219,6 +239,7 @@ void Wheel::updatePhysics()
 					F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
 					F_long = F_traction + F_drag + F_rr;
 				}
+				SOUND->Play(ENGINELOOP, EngineVolume, (44100 + abs(velocity) * 3000.0f));
 	}
 		break;
 	case 0:	// neutral case
@@ -233,8 +254,9 @@ void Wheel::updatePhysics()
 				}
 				else
 				{
-					F_long = F_drag + F_rr;
+					F_long = F_drag + F_rr;	
 				}
+				SOUND->Play(ENGINELOOP, EngineVolume, 44100 + 800.0f * abs(EnginePower));
 	}
 		break;
 	default: // regular gear
@@ -253,7 +275,8 @@ void Wheel::updatePhysics()
 					 F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
 					 F_long = F_traction + F_drag + F_rr;
 				 }
-
+				 // play sound at volume 0.01, with a freq multiplier of 2000 
+				 SOUND->Play(ENGINELOOP, EngineVolume, (44100 + velocity * 2000.0f));
 	}
 		break;
 	}
@@ -273,15 +296,27 @@ void Wheel::HandleEvents()
 
 	if (!raceStarted)
 	{
-		if (cameraHeight > position.y * 2.5f) cameraHeight -= 0.3f;
-		else 
+		if (cameraHeight > position.y * 2.5f)
 		{
-			raceStarted = true; 
+			cameraHeight -= 0.3f;
+			float test = (200.0f - cameraHeight) / 10000.0f;
+			if (test > EngineVolume) test = EngineVolume;
+			std::cout << "Sound volume: " << test << "\n";
+			SOUND->Play(ENGINELOOP, test, 44100 + 800.0f * abs(EnginePower));
+			canGearUp = false;
 		}
-		if (raceStarted) startTime = SDL_GetTicks() + 4000;
+		else
+		{
+			raceStarted = true;
+			canControl = true;
+		}
+		if (raceStarted) {
+			startTime = SDL_GetTicks() + 3000;	
+		}
 	}
 	else
 	{
+		if (SDL_GetTicks() - startTime > 0) canRace = true;
 		if (JOY->JoysticksInitialised())
 		{
 
@@ -310,7 +345,7 @@ void Wheel::HandleEvents()
 			}
 
 			// gear up on release of RB
-			if (canGearUp)
+			if (canGearUp && canRace)
 			{
 				if (JOY_RB) {
 					canGearUp = false;

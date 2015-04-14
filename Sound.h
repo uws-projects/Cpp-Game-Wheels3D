@@ -8,10 +8,9 @@
 #define PLAY Sound::Instance()->playSound
 #define PAUSE Sound::Instance()->pauseSound
 #define SOUND Sound::Instance()
-#define NUMBEROFSOUNDS 1
+#define NUMBEROFSOUNDS 2
 #define INTROSOUND 0
-
-// sound list
+#define ENGINELOOP 1
 
 class Sound
 {
@@ -32,8 +31,11 @@ public:
 	void Play(HSAMPLE &sound);
 	void Play(int soundNumber) { Play(soundlist[soundNumber]); }
 	void Play(int soundNumber, float volume) { Play(soundlist[soundNumber], volume); }
+	void Play(int soundNumber, float volume, float pitch) { Play(soundlist[soundNumber], volume, pitch); }
 	void Play(HSAMPLE &sound, float volume);
+	void Play(HSAMPLE &sound, float volume, float pitch);
 	void Pause(HSAMPLE &sound);
+	void Pause(int soundNumber);
 	void Resume();
 	static HSAMPLE Load(char* filename);
 

@@ -73,6 +73,7 @@ private:
 			if (complete) {
 				startTime = SDL_GetTicks() - startTime;
 				wheel->DetachCamera();
+				wheel->DetachControl();
 			}
 		}
 	}

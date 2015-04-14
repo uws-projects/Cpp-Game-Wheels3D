@@ -1,6 +1,7 @@
 #pragma once
 #include "Object.h"
 #include "Camera.h"
+#include "Sound.h"
 
 #define KG 1.0f
 #define S 0.01666666666f
@@ -37,10 +38,11 @@ public:
 	int& Gear()				{ return currentGear; }
 	
 	void AddDamage()		{ damage += damageAmount; }
-	void AddSpeedPenalty()	{ velocity *= velocityPenalty; }
+	void AddSpeedPenalty()	{ velocity *= VelocityPenalty; }
 	void DetachCamera()		{ detachedCamera = true; }
+	void DetachControl()	{ currentGear = NEUTRAL; canRace = false; }
 
-	void ApplySensibility()		{ damageAmount = 0.1f; }
+	void ApplySensibility()		{ damageAmount = 0.3f; }
 	void ApplyHappyWheel()		{ boostTurn = 2.0f; }
 	void ApplyInstantStop()		{ velocity = 0.0f; }
 	void ApplyRepair()			{ damage = 0; }
@@ -74,7 +76,6 @@ private:
 	
 	Track *raceTrack;
 
-	float velocityPenalty;
 	const float Cdrag = 0.9f;	// drag coefficient
 	const float Crolling = Cdrag * 10.0f; // rolling coefficient
 	const float Cbraking = 10.0f;
@@ -140,5 +141,8 @@ private:
 	float boostTurn = 1.0f;
 	float damageAmount = 0.01f;
 	bool reverseControls;
+	bool automaticGearBox;
+	bool canControl;
+	bool canRace;
 };
 

@@ -1,5 +1,9 @@
 #include "HUD.h"
 
+#define RED 1
+#define YELLOW 2
+#define GREEN 3
+
 void HUD::Initialize()
 {
 	plane = Load::Obj("model/cubeModel.obj");
@@ -24,7 +28,7 @@ void HUD::Update()
 	// building Speed texture
 	{ 
 		int s = (*speed);  
-		text = std::to_string(s); 
+		text = std::to_string(abs(s)); 
 		SpeedTexture = Load::Text(text.c_str()); 
 	}
 
@@ -36,16 +40,15 @@ void HUD::Update()
 		{
 			if (showStopLight == false)
 			{
-				if (SDL_GetTicks() > t - 4000 && SDL_GetTicks() < t)
+				if (SDL_GetTicks() > t - 6000 && SDL_GetTicks() < t)
 					showStopLight = true;
 			}
 			else
 			{
-				std::cout << "\nnow: " << now << " t: " << t;
-				if (SDL_GetTicks() > t - 4000 + 1000) lamp = 1;
-				if (SDL_GetTicks() > t - 4000 + 2000) lamp = 2;
-				if (SDL_GetTicks() > t - 4000 + 3000) lamp = 3;
-				if (SDL_GetTicks() > t - 4000 + 4000) showStopLight = false;
+				if (SDL_GetTicks() > t - 2000) lamp = RED;
+				if (SDL_GetTicks() > t - 1000) lamp = YELLOW;
+				if (SDL_GetTicks() > t ) lamp = GREEN;
+				if (SDL_GetTicks() > t + 1000) showStopLight = false;
 			}
 
 			// get the time difference in milliseconds 

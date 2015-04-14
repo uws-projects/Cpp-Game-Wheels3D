@@ -42,6 +42,9 @@
 #define PI 3.14159265359f
 #endif
 
+#define EngineVolume 0.05f
+#define VelocityPenalty 0.95f
+
 // joystick buttons
 #define BUTTON_A 10
 #define BUTTON_B 11
@@ -58,5 +61,5 @@
 #define LEFTSTICK 1
 #define RIGHTSTICK 2
 
-#define FULLSCREEN true
-//#define FULLSCREEN false
+//#define FULLSCREEN true
+#define FULLSCREEN false

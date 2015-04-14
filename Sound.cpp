@@ -6,14 +6,24 @@ HSAMPLE Sound::soundlist[NUMBEROFSOUNDS] = {};
 void Sound::Initialize()
 {
 	soundlist[INTROSOUND] = Load(".\\samples\\use.wav");
+
+	// Comment one of these two to check the other how it sounds
+	soundlist[ENGINELOOP] = Load(".\\samples\\car_engine_SuperLoop.wav");
+	//soundlist[ENGINELOOP] = Load(".\\samples\\use.wav");
 }
+
 
 void Sound::Play(HSAMPLE &sound)
 {
+	Play(sound, 1.0f, 1.0f);
+}
+
+void Sound::Play(HSAMPLE &sound, float volume, float pitch)
+{
 	HCHANNEL channels = BASS_SampleGetChannel(sound, FALSE);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_FREQ, -1);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_VOL, 50);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_PAN, (rand()%201) - 100);
+	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_VOL, volume);
+	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_PAN, 0);
+	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_FREQ, pitch);
 
 	if (!BASS_ChannelPlay(channels, FALSE))
 		std::cerr << "Can`t play sample \n";
@@ -21,18 +31,17 @@ void Sound::Play(HSAMPLE &sound)
 
 void Sound::Play(HSAMPLE &sound, float volume)
 {
-	HCHANNEL channels = BASS_SampleGetChannel(sound, FALSE);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_FREQ, -1);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_VOL, volume);
-	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_PAN, (rand() % 201) - 100);
-
-	if (!BASS_ChannelPlay(channels, FALSE))
-		std::cerr << "Can`t play sample \n";
+	Play(sound, volume, 1.0f);
 }
 
 void Sound::Pause(HSAMPLE &sound)
 {
 	BASS_SampleStop(sound);
+}
+
+void Sound::Pause(int sound)
+{
+	BASS_SampleStop(soundlist[sound]);
 }
 
 void Sound::Resume()
