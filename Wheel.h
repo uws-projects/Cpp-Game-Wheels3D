@@ -19,10 +19,10 @@ public:
 	void Update();
 	void HandleEvents();
 
-	void useModel(GLuint Model) { model = Model; };
-	void useMaterial(Material m)	{ material = m; };
-	void useIndex(unsigned int meshCount) { indexCount = meshCount; };
-	void useLight(Light& l) {light = l; };
+	void UseModel(GLuint Model) { model = Model; };
+	void UseMaterial(Material m)	{ material = m; };
+	void UseIndex(unsigned int meshCount) { indexCount = meshCount; };
+	void UseLight(Light& l) {light = l; };
 
 	glm::vec3 CameraPosition() {return cameraPosition; };
 	glm::vec3 CameraAt()		{ return cameraAt; }
@@ -36,9 +36,24 @@ public:
 	double& StartTimer()	{ return startTime; }
 	int& Gear()				{ return currentGear; }
 	
-	void AddDamage()		{ damage += DAMAGEAMOUNT; }
+	void AddDamage()		{ damage += damageAmount; }
 	void AddSpeedPenalty()	{ velocity *= velocityPenalty; }
 	void DetachCamera()		{ detachedCamera = true; }
+
+	void ApplySensibility()		{ damageAmount = 0.1f; }
+	void ApplyHappyWheel()		{ boostTurn = 2.0f; }
+	void ApplyInstantStop()		{ velocity = 0.0f; }
+	void ApplyRepair()			{ damage = 0; }
+	void ApplyReverseControls() { reverseControls = true; }
+	void ApplyShield()			{ damageAmount = 0; }
+	void ApplyTurbo()			{ boostTurbo = 2.0f; }
+
+	void UndoSensibility()		{ damageAmount = 0.01f; }
+	void UndoHappyWheel()		{ boostTurn = 1.0f; }
+	void UndoReverseControls()	{ reverseControls = false; }
+	void UndoShield()			{ damageAmount = 0.01f; }
+	void UndoTurbo()			{ boostTurbo = 1.0f; }
+
 	~Wheel();
 
 protected:
@@ -71,7 +86,6 @@ private:
 	const float DIFFERENTIALRATIO = 3.42f;
 	const float CAMERACOLLISIONSPEED = 0.05f;
 	const float CAMERAMAXIMUMDISPLACEMENT = 0.5f;
-	const float DAMAGEAMOUNT = 0.0f;
 
 	float gears[8];		// 6 gears + reverse + neutral
 	int currentGear;
@@ -121,5 +135,10 @@ private:
 	void updatePhysics();
 	void gearUp();
 	void gearDown();
+
+	float boostTurbo = 1.0f;
+	float boostTurn = 1.0f;
+	float damageAmount = 0.01f;
+	bool reverseControls;
 };
 

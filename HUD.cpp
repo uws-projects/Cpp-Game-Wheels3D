@@ -11,6 +11,12 @@ void HUD::Initialize()
 	text = "N";
 	GearTexture = Load::Text(text.c_str());
 	BackgroundTexture = Load::PNG("model/hud.png");
+	showStopLight = false;
+	StopLight[0] = Load::PNG(".\\model\\stoplight\\0.png");
+	StopLight[1] = Load::PNG(".\\model\\stoplight\\1.png");
+	StopLight[2] = Load::PNG(".\\model\\stoplight\\2.png");
+	StopLight[3] = Load::PNG(".\\model\\stoplight\\3.png");
+	lamp = 0;
 }
 
 void HUD::Update()
@@ -22,37 +28,63 @@ void HUD::Update()
 		SpeedTexture = Load::Text(text.c_str()); 
 	}
 
+	float now = SDL_GetTicks();
 	// building Timer texture
 	{
-	double t = (*timer);
-	if (t != 0)	// if the race has started, so time elapsed is not 0
-	{
-		// get the time difference in milliseconds 
-		double startTime = SDL_GetTicks() - t;
+		double t = (*timer);
+		if (t != 0)	// if the race has started, so time elapsed is not 0
+		{
+			if (showStopLight == false)
+			{
+				if (SDL_GetTicks() > t - 4000 && SDL_GetTicks() < t)
+					showStopLight = true;
+			}
+			else
+			{
+				std::cout << "\nnow: " << now << " t: " << t;
+				if (SDL_GetTicks() > t - 4000 + 1000) lamp = 1;
+				if (SDL_GetTicks() > t - 4000 + 2000) lamp = 2;
+				if (SDL_GetTicks() > t - 4000 + 3000) lamp = 3;
+				if (SDL_GetTicks() > t - 4000 + 4000) showStopLight = false;
+			}
 
-		// and format it to this 00:00:000
-		// if the number of minutes or seconds is smaller than 10 add a 0
-		// before the unit number so we will have 01:03:235 instead of 1:3:235;
-		int minutes = (int)startTime / 60000;
-		int seconds = (int)(startTime - (minutes * 60000)) / 1000;
-		int mili = (int)(startTime - minutes * 60000 - seconds * 1000);
-		std::string result = "";
-		if (minutes < 10) {
-			result += "0" + std::to_string(minutes) + ":";
-		}
-		else result += std::to_string(minutes) + ":";
-		if (seconds < 10) {
-			result += "0" + std::to_string(seconds) + ":";
-		}
-		else result += std::to_string(seconds) + ":";
-		// add all the formated text in a string
-		result += std::to_string(mili);
+			// get the time difference in milliseconds 
+			double startTime = SDL_GetTicks() - t;// ;
+			if (startTime > 0)
+			{
+				// and format it to this 00:00:000
+				// if the number of minutes or seconds is smaller than 10 add a 0
+				// before the unit number so we will have 01:03:235 instead of 1:3:235;
+				int minutes = (int)startTime / 60000;
+				int seconds = (int)(startTime - (minutes * 60000)) / 1000;
+				int mili = (int)(startTime - minutes * 60000 - seconds * 1000);
+				std::string result = "";
+				if (minutes < 10)
+				{
+					result += "0" + std::to_string(minutes) + ":";
+				}
+				else
+				{
+					result += std::to_string(minutes) + ":";
+				}
+				if (seconds < 10)
+				{
+					result += "0" + std::to_string(seconds) + ":";
+				}
+				else
+				{
+					result += std::to_string(seconds) + ":";
+				}
+				// add all the formated text in a string
+				result += std::to_string(mili);
 
-		// and build the texture based on that string
-		TimerTexture = Load::Text(result.c_str());
+				// and build the texture based on that string
+				TimerTexture = Load::Text(result.c_str());
+			}
+
+		}
+
 	}
-}
-
 	// building gear texture
 	{
 		int g = (*gear);
@@ -139,6 +171,22 @@ void HUD::Render()
 			glBindVertexArray(0);
 		}
 		Shader::Pop();
+
+		if (showStopLight)
+		{
+			Shader::Bind(0, "tex", StopLight[lamp]);
+			Shader::Push();
+			{
+				Shader::Top() = glm::translate(Shader::Top(), glm::vec3(0.0f, 0.6f, 0.1f));
+				Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.08f, 0.3f, 0.1f));
+				Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+				Shader::SetUniform("ModelViewMatrix", Shader::Top());
+				glBindVertexArray(plane);
+				glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+				glBindVertexArray(0);
+			}
+			Shader::Pop();
+		}
 	}
 	Shader::Pop();
 	glEnable(GL_DEPTH_TEST);

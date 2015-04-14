@@ -9,6 +9,11 @@
 #define SETTINGS 3
 #define ABOUT 4
 #define QUIT 5
+#define LOADING 6
+
+void Menu::Update()
+{
+}
 
 bool Menu::OnEnter()
 {
@@ -19,6 +24,7 @@ bool Menu::OnEnter()
 	texture[SETTINGS] = Load::PNG(".\\model\\menu\\settings.png");
 	texture[ABOUT] = Load::PNG(".\\model\\menu\\about.png");
 	texture[QUIT] = Load::PNG(".\\model\\menu\\quit.png");
+	texture[LOADING] = Load::PNG(".\\model\\menu\\loading.png");
 
 	float height = 0.58f;
 	float aspect = WIDTH / HEIGHT;
@@ -70,7 +76,11 @@ void Menu::HandleEvents()
 		// when we are in the help menu, only button A works which switches to main menu
 		if (option == HELP)
 		{
-			if (JOY_A) option = NEWGAME;
+			if (JOY_A)
+			{
+				option = NEWGAME;
+				SDL_Delay(250);
+			}
 		}
 		else
 		// in main menu
@@ -80,27 +90,31 @@ void Menu::HandleEvents()
 			if (JOY_RB)
 			{
 				if (option < NUMBEROFOPTIONS)
+				{
 					option++;
-				SDL_Delay(200);
+					SDL_Delay(150);
+				}
 			}
 			if (JOY_LB)
 			{
 				if (option > 1)
+				{
 					option--;
-				SDL_Delay(200);
+					SDL_Delay(150);
+				}
 			}
 			// if we press Y we display the help again
 			if (JOY_Y) 
 			{
 				option = HELP;
-				SDL_Delay(200);
+				SDL_Delay(150);
 			}
 			// if we press A, we execute the selected option
 			if (JOY_A)
 			{
 				switch (option)
 				{
-				case NEWGAME: Application::Instance()->GetStateMachine()->PushState(new Play());
+				case NEWGAME: option = LOADING;
 					break;
 				case HIGHSCORES: std::cout << "Launching Highscores\n";//Application::Instance()->GetStateMachine()->PushState(new Highscore());
 					break;
@@ -137,4 +151,8 @@ void Menu::Render()
 		glBindVertexArray(0);
 	}
 	Shader::Pop();
+
+	if (option == LOADING)
+		Application::Instance()->GetStateMachine()->PushState(new Play());
+
 }

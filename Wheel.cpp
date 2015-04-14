@@ -66,9 +66,6 @@ void Wheel::Render()
 	{
 		glEnable(GL_DEPTH_TEST);
 		glCullFace(GL_BACK);
-		//Shader::Use(Shader::Bump());
-		//Shader::AddLight(light);
-		//Shader::AddMaterial(material);
 		
 		Shader::Top() = glm::translate(Shader::Top(), position);
 		Shader::Top() = glm::rotate(Shader::Top(), -direction, glm::vec3(0.0f, 1.0f, 0.0f));
@@ -90,7 +87,6 @@ void Wheel::Render()
 		glBindVertexArray(0);
 		glDisable(GL_CULL_FACE);
 	}
-	Shader::Pop();
 	Shader::Pop();
 }
 
@@ -198,7 +194,7 @@ void Wheel::updatePhysics()
 	if (abs(F_long) < 0.4f) F_long = 0.0f;
 
 	Acceleration = F_long / MASS;
-	velocity = velocity + Acceleration * DT;
+	velocity = velocity + Acceleration * DT * boostTurbo;
 
 	// if the velocity is too close to 0, make it 0
 	if (abs(velocity) < 0.082) {
@@ -282,7 +278,7 @@ void Wheel::HandleEvents()
 		{
 			raceStarted = true; 
 		}
-		if (raceStarted) startTime = SDL_GetTicks();
+		if (raceStarted) startTime = SDL_GetTicks() + 4000;
 	}
 	else
 	{
@@ -304,16 +300,21 @@ void Wheel::HandleEvents()
 			EnginePower = (Trigger / 32765) * 100;
 
 			// value to reduce turning at high speeds
-			float toAdd = (LeftStickXValue / 50.0f);// *(1.1f + velocity*0.8f);
 
-			if (LeftStickXValue > 17.0f || LeftStickXValue < -17.0f) direction += toAdd;
+			float toAdd = (LeftStickXValue / 50.0f) * boostTurn;
+
+			if (LeftStickXValue > 17.0f || LeftStickXValue < -17.0f)
+			{
+				if (reverseControls) direction -= toAdd;
+				else direction += toAdd;
+			}
 
 			// gear up on release of RB
 			if (canGearUp)
 			{
 				if (JOY_RB) {
 					canGearUp = false;
-					gearUp();
+					if (reverseControls) gearDown(); else gearUp();
 				}
 			}
 
@@ -322,7 +323,7 @@ void Wheel::HandleEvents()
 			{
 				if (JOY_LB) {
 					canGearDown = false;
-					gearDown();
+					if (reverseControls) gearUp(); else gearDown();
 				}
 			}
 

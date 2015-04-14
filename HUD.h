@@ -23,10 +23,16 @@ public:
 	Material material;
 	float* speed;
 	double* timer;
+	double lapTime;
 	int* gear;
 	GLuint SpeedTexture;
 	GLuint TimerTexture;
 	GLuint GearTexture;
 	GLuint BackgroundTexture;
+	GLuint StopLight[4];
+
+	bool showStopLight;
+	int stopLightDelay;
+	int lamp; 
 };
 

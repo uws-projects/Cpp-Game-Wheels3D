@@ -68,8 +68,6 @@ void Logo::Update()
 	}
 	if (transparency < 1.0f) {
 		transparency += (float) (totalTime / 300000.0f);	// if it`s transparent make it visible
-		std::cout << "\n totalTime: " << totalTime << " result: " <<  (float) totalTime / 300000.0f;
-		std::cout << "\n transparency: " << transparency;
 	}
 	else transparency = 1.0f;
 	Shader::SetUniform("alfa", transparency);
@@ -103,6 +101,7 @@ void Logo::HandleEvents()
 		{
 			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
+			SDL_Delay(100);
 		}	
 	}
 	else

@@ -1,118 +1,131 @@
 #include "Powerup.h"
 
-Powerup::Powerup()
-{
-}
+#define SENSIBILITY 0
+#define HAPPYWHEEL 1
+#define TURBO 2
+#define REPAIR 5
+#define REVERSECONTROLS 4
+#define SHIELD 3
+#define INSTANTSTOP 6
 
 void Powerup::Initialize()
 {
 	//Initialize the power-up object
-	std::cout << "\nPower-ups Intialized";
 	model = Load::Obj("model/cubeModel.obj");
 	indexCount = Load::meshCount();
 	scale = glm::vec3(0.18f);
+	visible = true;
+	timer = 0.0f;
+	alarm = 0.0f;
+
 }
 
-void Powerup::Create(char *type, glm::vec3 PowerPosition)
+Powerup::Powerup(Wheel * w, int powerType, glm::vec3 Position, int (&tex)[7])
 {
-	//Inputs for the choice of type of powerup and position in world.
-	position = PowerPosition;
-	if (type == "fog"){ texture = Load::PNG("model/powerups/fog.png"); }
-	if (type == "happywheel"){ texture = Load::PNG("model/powerups/happy_wheel.png"); }
-	if (type == "instantstop"){ texture = Load::PNG("model/powerups/instant_stop.png"); }
-	if (type == "jump"){ texture = Load::PNG("model/powerups/jump.png"); }
-	if (type == "oildrop"){ texture = Load::PNG("model/powerups/oil_drop.png"); }
-	if (type == "repair"){ texture = Load::PNG("model/powerups/repair.png"); }
-	if (type == "reversecontrols"){ texture = Load::PNG("model/powerups/reverse_controls.png"); }
-	if (type == "shield"){ texture = Load::PNG("model/powerups/shield.png"); }
-	if (type == "spikestrip"){ texture = Load::PNG("model/powerups/spikestrip.png"); }
-	if (type == "turbo"){ texture = Load::PNG("model/powerups/turbo.png"); }
-	if (type == "twister"){ texture = Load::PNG("model/powerups/twister.png"); }
+	wheel = w;
+	type = powerType;
+	position = Position;
+
+	texture[SENSIBILITY] = tex[0];
+	texture[HAPPYWHEEL] = tex[1];
+	texture[INSTANTSTOP] = tex[2];
+	texture[REPAIR] = tex[3];
+	texture[REVERSECONTROLS] = tex[4];
+	texture[SHIELD] = tex[5];
+	texture[TURBO] = tex[6];
+
 }
 
-// Effects to be applied to wheel upon collision
-void Powerup::ApplyFog()
+bool Powerup::contact()
 {
-	//Apply effect
-}
+	float top = position.z + scale.z;
+	float bottom = position.z - scale.z;
+	float left = position.x - scale.x;
+	float right = position.x + scale.x;
 
-void Powerup::ApplyHappyWheel()
-{
-	//Apply effect
-}
+	float px = position.x;
+	float pz = position.z;
+	float pr = scale.x;
 
-void Powerup::ApplyInstantStop()
-{
-	//Apply effect
-}
+	float wx = wheel->Position().x;
+	float wz = wheel->Position().z;
+	float wr = wheel->Radius();
 
-void Powerup::ApplyJump()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyOilDrop()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyRepair()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyReverseControls()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyShield()
-{
-	//Apply effect
-}
-
-void Powerup::ApplySpikeStrip()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyTurbo()
-{
-	//Apply effect
-}
-
-void Powerup::ApplyTwister()
-{
-	//Apply effect
+	if (wx + wr<px - pr)		return false;
+	if (wx - wr>px + pr)		return false;
+	if (wz - wr>pz - pr)		return false;
+	if (wz + wr<pz + pr)		return false;
+	if (!visible)				return false;
+	return true;
 }
 
 void Powerup::Update()
 {
-	//Detect collision (centre of powerup expanding evenly outwards) then apply effect
+	if (contact())
+	{
+		visible = false;
+		switch (type)
+		{
+		case SENSIBILITY:		wheel->ApplySensibility();		alarm = 10000; break;
+		case HAPPYWHEEL:		wheel->ApplyHappyWheel();		alarm = 10000; break;
+		case TURBO:				wheel->ApplyTurbo();			alarm = 3000; break;
+		case SHIELD:			wheel->ApplyShield();			alarm = 10000; break;
+		case REVERSECONTROLS:	wheel->ApplyReverseControls();	alarm = 3000; break;
+		case REPAIR:			wheel->ApplyRepair();			alarm = 10000; break;
+		case INSTANTSTOP:		wheel->ApplyInstantStop();		alarm = 10000; break;
+			
+		default:
+			break;
+		}
+		timer = SDL_GetTicks();
+	}
+	if (!visible)
+	{
+		if (SDL_GetTicks() - timer > alarm)
+		{
+			switch (type)
+			{
+			case SENSIBILITY:		wheel->UndoSensibility();		break;
+			case HAPPYWHEEL:		wheel->UndoHappyWheel();		break;
+			case TURBO:				wheel->UndoTurbo();				break;
+			case SHIELD:			wheel->UndoShield();			break;
+			case REVERSECONTROLS:	wheel->UndoReverseControls();	break;
+			
+			default:
+				break;
+			}
+		}
+		if (SDL_GetTicks() - timer > 10000)
+		{
+			type = rand() % 7;
+			visible = true;
+		}
+	}
 }
 
 
 void Powerup::Render()
 {
-	glEnable(GL_DEPTH_TEST);
-	glCullFace(GL_BACK);
-	//Render the powerup
-	Shader::Push();
-	{
-		Shader::Top() = glm::translate(Shader::Top(), position);
-		Shader::Top() = glm::scale(Shader::Top(), scale);
-		Shader::Top() = glm::rotate(Shader::Top(), rotationSpeed, glm::vec3(1.0f, 1.0f, 1.0f));
-		Shader::AddMaterial(material);
-		Shader::SetUniform("ModelViewMatrix", Shader::Top());
-		Shader::SetUniform("MVP", Shader::ProjectionMatrix()*Shader::Top());
-		Shader::Bind(0, "tex", texture);
-		glBindVertexArray(model);
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-		glBindVertexArray(0);
+	if (visible) {
+		glEnable(GL_DEPTH_TEST);
+		glCullFace(GL_BACK);
+		//Render the powerup
+		Shader::Push();
+		{
+			Shader::Top() = glm::translate(Shader::Top(), position);
+			Shader::Top() = glm::scale(Shader::Top(), scale);
+			Shader::Top() = glm::rotate(Shader::Top(), rotationSpeed, glm::vec3(1.0f, 1.0f, 1.0f));
+			Shader::AddMaterial(material);
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			Shader::SetUniform("MVP", Shader::ProjectionMatrix()*Shader::Top());
+			Shader::Bind(0, "tex", texture[type]);
+			glBindVertexArray(model);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		rotationSpeed += 1.5f; //Power-up rotation speed
+		Shader::Pop();
 	}
-	rotationSpeed += 1.5f; //Power-up rotation speed
-	Shader::Pop();
-
 }
 
 void Powerup::HandleEvents()

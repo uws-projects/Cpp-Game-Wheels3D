@@ -8,11 +8,11 @@
 
 
 // Windows specific: Uncomment the following line to open a console window for debug output
-//#if _DEBUG
-//#pragma comment(linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
-//#endif
+#if _DEBUG
+#pragma comment(linker, "/subsystem:\"console\" /entry:\"WinMainCRTStartup\"")
+#endif
 
-#pragma comment(linker, "/entry:\"WinMainCRTStartup\"")
+//#pragma comment(linker, "/entry:\"WinMainCRTStartup\"")
 
 const int FPS = 60;
 const float DELAYTIME = 1000.0f / FPS;

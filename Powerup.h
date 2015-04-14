@@ -1,19 +1,17 @@
 #include "Object.h"
-#include <GL\glew.h>
-#include <glm.hpp>
-#include <SDL.h>
-#include "Material.h"
+#include "Wheel.h"
 
 class Powerup :
 	public Object
 {
 public:
-	Powerup();
+	Powerup() {};
+	Powerup(Wheel * w, int type, glm::vec3 Position, int (&tex)[7]);
+	void AttachToWheel(Wheel * w) { wheel = w; }
 	void Initialize();
 	void Render();
 	void Update();
 	void HandleEvents();
-	void Create(char *type, glm::vec3 PowerPosition);
 
 	void UseModel(GLuint Model) { model = Model; };
 	void UseMaterial(Material m)	{ material = m; };
@@ -25,24 +23,28 @@ public:
 	~Powerup();
 protected:
 private:
-	void ApplyFog();
+	bool contact();
+	void ApplySensibility();
 	void ApplyHappyWheel();
 	void ApplyInstantStop();
-	void ApplyJump();
-	void ApplyOilDrop();
 	void ApplyRepair();
 	void ApplyReverseControls();
 	void ApplyShield();
-	void ApplySpikeStrip();
 	void ApplyTurbo();
-	void ApplyTwister();
 
+
+	Wheel *wheel;
 	Cube *Powercube;
 	GLuint model;
-	GLuint texture;
+	GLuint texture[7];
+
 	Material material;
 	unsigned int indexCount;
 	glm::vec3 position;
 	glm::vec3 scale;
 	float rotationSpeed = 0.0f;
+	float alarm;
+	float timer;
+	int type;
+	bool visible;
 };

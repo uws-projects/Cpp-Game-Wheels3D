@@ -7,7 +7,7 @@ public:
 	Menu() {}
 	~Menu() {}
 
-	void Update() {};
+	void Update();
 	void Render();
 	void HandleEvents();
 

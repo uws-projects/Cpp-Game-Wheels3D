@@ -9,24 +9,38 @@ Play::Play()
 bool Play::OnEnter()
 {
 	//INPUT->InitialiseJoysticks();
+
+	srand(SDL_GetTicks());
+
 	camera = new Camera;
 	skybox = new Skybox;
 	world = new World;
 	player = new Wheel;
-	speedometer = new HUD;
-	powerupHappyWheel = new Powerup;
-	powerupTwister = new Powerup;
-
-	powerupHappyWheel->Create("turbo", glm::vec3(37.0f, 0.3f, 30.0f));
-	powerupTwister->Create("instantstop", glm::vec3(38.0f, 0.3f, 30.0f));
-
-	//Shader::Start();
+	speedometer = new HUD; 
+	int tex[7];
+	tex[0] = Load::PNG("model/powerups/fog.png");
+	tex[1] = Load::PNG("model/powerups/happy_wheel.png");
+	tex[2] = Load::PNG("model/powerups/instant_stop.png");
+	tex[3] = Load::PNG("model/powerups/repair.png");
+	tex[4] = Load::PNG("model/powerups/reverse_controls.png");
+	tex[5] = Load::PNG("model/powerups/shield.png");
+	tex[6] = Load::PNG("model/powerups/turbo.png");
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);
 	m_object.push_back(world);
-	m_object.push_back(powerupHappyWheel);
-	m_object.push_back(powerupTwister);
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(37.0f, 0.3f, 30.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(38.0f, 0.3f, 30.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(51.0f, 0.3f, 151.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(51.0f, 0.3f, 150.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(136.0f, 0.3f, 100.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(134.0f, 0.3f, 100.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(132.0f, 0.3f, 100.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(130.0f, 0.3f, 100.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(140.0f, 0.3f, 6.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(140.0f, 0.3f, 7.0f), tex));
+	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(140.0f, 0.3f, 8.0f), tex));
+
 	m_object.push_back(player);
 	m_object.push_back(speedometer);
 	for (unsigned i = 0; i < m_object.size(); i++)
