@@ -59,7 +59,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glew32.lib;SDL2.lib;SDL2_image.lib;SDL2_mixer.lib;SDL2_ttf.lib;SDL2main.lib;bass.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>
   </ItemDefinitionGroup>
@@ -99,6 +99,7 @@
     <ClInclude Include="settings.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="Sound.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Track.h" />
     <ClInclude Include="Wheel.h" />
@@ -120,6 +121,7 @@
     <ClCompile Include="rt3dObjLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />
+    <ClCompile Include="Sound.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Track.cpp" />
     <ClCompile Include="Wheel.cpp" />

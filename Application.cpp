@@ -60,7 +60,7 @@ bool Application::Initialize()
 
 void Application::Update()
 {
-	INPUT->Update();
+	Input->Update();
 	SDL_ShowCursor(false);
 	m_stateMachine->Update();
 	

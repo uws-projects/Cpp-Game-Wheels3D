@@ -6,10 +6,10 @@
 
 bool Logo::OnEnter()
 {
+	SOUND->Play(INTROSOUND);
 	Shader::Start();
-	INPUT->InitialiseJoysticks();
-
-	transparency = -0.05f;
+	Input->InitialiseJoysticks();
+	transparency = 0.0f;
 	texture = Load::PNG(".\\model\\background.png");
 
 	// create rectangle to cover screen based on one scalable variable
@@ -109,6 +109,7 @@ void Logo::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
+			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
 		}
 	}

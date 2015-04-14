@@ -8,7 +8,6 @@ Play::Play()
 
 bool Play::OnEnter()
 {
-	//INPUT->InitialiseJoysticks();
 
 	srand(SDL_GetTicks());
 

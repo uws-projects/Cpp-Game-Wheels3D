@@ -13,8 +13,8 @@
 #define PRESSING TheInputHandler::Instance()->IsKeyPressed
 #endif
 
-#ifndef INPUT
-#define INPUT TheInputHandler::Instance()
+#ifndef Input
+#define Input TheInputHandler::Instance()
 #endif
 
 #ifndef ISRELEASED

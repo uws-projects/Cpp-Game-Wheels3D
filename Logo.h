@@ -1,5 +1,6 @@
 #pragma once
 #include "AbstractState.h"
+#include "Sound.h"
 class Logo :
 	public AbstractState
 {
