@@ -1,6 +1,7 @@
 #include "Menu.h"
 #include "Application.h"
 #include "Play.h"
+#include "HighScoreScreen.h"
 
 #define NUMBEROFOPTIONS 5
 #define HELP 0
@@ -122,7 +123,7 @@ void Menu::HandleEvents()
 				{
 				case NEWGAME: option = LOADING;
 					break;
-				case HIGHSCORES: std::cout << "Launching Highscores\n";//Application::Instance()->GetStateMachine()->PushState(new Highscore());
+				case HIGHSCORES: SDL_Delay(150); Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
 					break;
 				case SETTINGS: std::cout << "Launching Settings\n";//Application::Instance()->GetStateMachine()->PushState(new Settings());
 					break;

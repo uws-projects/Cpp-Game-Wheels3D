@@ -2,6 +2,8 @@
 #include "Wheel.h"
 #include "Track.h"
 #include "Application.h"
+#include "Highscore.h"
+#include "HighScoreScreen.h"
 
 #ifndef COMPLETE
 #define COMPLETE true
@@ -158,7 +160,13 @@ void Wheel::Update()
 		cameraHeight += 0.1f;
 		cameraPosition.y = cameraHeight;
 		if (cameraHeight > 15.0f)
-			Application::Instance()->Quit();
+		{
+			SCORE->AddScore(finalTime, "Tinu");
+			Application::Instance()->GetStateMachine()->PopState();
+			Application::Instance()->GetStateMachine()->PopState();
+			Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
+		}
+		
 	}
 	
 	cameraAt = glm::vec3(position.x + cameraZoom*sin((360.0f - direction)*DEGREES), position.y, position.z + cameraZoom*cos((360.0f - direction)*DEGREES));

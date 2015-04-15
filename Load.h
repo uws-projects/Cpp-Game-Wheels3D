@@ -12,6 +12,7 @@ class Load
 public:
 	Load();
 	static GLuint Text(const char * str);
+	static GLuint Load::Text(const char * str, bool withDigitsFont);
 	static GLuint CubeMap(const char *fname[6], GLuint *texID);
 	static GLuint BMP(char *fname);
 	static GLuint PNG(char *fname);
