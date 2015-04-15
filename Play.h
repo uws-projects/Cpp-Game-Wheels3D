@@ -30,7 +30,7 @@ private:
 	Camera *camera;
 	Skybox *skybox;
 	World *world;
-	HUD *speedometer;
+	HUD *hud;
 	Powerup *powerupHappyWheel;
 	Powerup *powerupTwister;
 

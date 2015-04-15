@@ -1,0 +1,5 @@
+music01.ogg - 01 - Title - Atomic Bomberman Original Soundtrack
+music02.ogg - 04 - Network - Atomic Bomberman Original Soundtrack
+music03.ogg - 08 - Scoreboard - Atomic Bomberman Original Soundtrack
+music04.ogg - 09 - Game Setup - Atomic Bomberman Original Soundtrack
+music05.ogg - 13 - Menu - Atomic Bomberman Original Soundtrack

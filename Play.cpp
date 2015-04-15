@@ -8,14 +8,13 @@ Play::Play()
 
 bool Play::OnEnter()
 {
-
 	srand(SDL_GetTicks());
 
 	camera = new Camera;
 	skybox = new Skybox;
 	world = new World;
 	player = new Wheel;
-	speedometer = new HUD; 
+	hud = new HUD; 
 	int tex[7];
 	tex[0] = Load::PNG("model/powerups/fog.png");
 	tex[1] = Load::PNG("model/powerups/happy_wheel.png");
@@ -41,19 +40,20 @@ bool Play::OnEnter()
 	m_object.push_back(new Powerup(player, rand() % 7, glm::vec3(140.0f, 0.3f, 8.0f), tex));
 
 	m_object.push_back(player);
-	m_object.push_back(speedometer);
+	hud->AttachPlayer(player);
+	m_object.push_back(hud);
 	for (unsigned i = 0; i < m_object.size(); i++)
 	{
 		m_object[i]->Initialize();
 	}
 
-	speedometer->SetSpeed(&player->Velocity());
-	speedometer->SetTimer(&player->StartTimer());
-	speedometer->SetGear(&player->Gear());
-
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	SOUND->Pause(MUSICMENU);
+	SOUND->Play(MUSICSETUP, MusicVolume);
+
 	return true;
 }
 

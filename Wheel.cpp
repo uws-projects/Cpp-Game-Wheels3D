@@ -53,6 +53,8 @@ void Wheel::Initialize()
 
 	raceTrack = new Track(this);
 	raceTrack->Initialize();
+	raceComplete = false;
+	finalTime = 0.0f;
 
 	initializePhysics();
 
@@ -141,7 +143,7 @@ void Wheel::Update()
 		cameraPosition.z += cameraWidthZ;
 	}
 	else
-	{
+	{	
 		canControl = false;
 		cameraHeight += 0.1f;
 		cameraPosition.y = cameraHeight;
@@ -302,7 +304,7 @@ void Wheel::HandleEvents()
 			float test = (200.0f - cameraHeight) / 10000.0f;
 			if (test > EngineVolume) test = EngineVolume;
 			std::cout << "Sound volume: " << test << "\n";
-			SOUND->Play(ENGINELOOP, test, 44100 + 800.0f * abs(EnginePower));
+			SOUND->Play(ENGINELOOP, test, 44100 + 700.0f * abs(EnginePower));
 			canGearUp = false;
 		}
 		else
@@ -310,7 +312,7 @@ void Wheel::HandleEvents()
 			raceStarted = true;
 			canControl = true;
 		}
-		if (raceStarted) {
+		if (raceStarted && !raceComplete) {
 			startTime = SDL_GetTicks() + 3000;	
 		}
 	}
@@ -377,16 +379,16 @@ void Wheel::HandleEvents()
 
 			{
 				if (RightStickYvalue > 10) if (cameraHeight > 0.1f) {
-					cameraHeight -= zoomAmount; std::cout << "Height : " << cameraHeight << "\n";
+					cameraHeight -= zoomAmount;
 				}
 				if (RightStickYvalue < -10) {
-					cameraHeight += zoomAmount; std::cout << "Height : " << cameraHeight << "\n";
+					cameraHeight += zoomAmount;
 				}
 				if (RightStickXvalue > 10) if (cameraZoom < 10.0f) {
-					cameraZoom += zoomAmount; std::cout << "Zoom : " << cameraZoom << "\n";
+					cameraZoom += zoomAmount;
 				}
 				if (RightStickXvalue< -10) if (cameraZoom > 0.1f) {
-					cameraZoom -= zoomAmount; std::cout << "Zoom : " << cameraZoom << "\n";
+					cameraZoom -= zoomAmount;
 				}
 			}
 			cameraTurn = -RightStickYvalue;

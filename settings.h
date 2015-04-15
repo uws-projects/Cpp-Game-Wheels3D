@@ -44,6 +44,8 @@
 
 #define EngineVolume 0.05f
 #define VelocityPenalty 0.95f
+#define MusicVolume 0.15f
+#define SampleVolume 0.2f
 
 // joystick buttons
 #define BUTTON_A 10

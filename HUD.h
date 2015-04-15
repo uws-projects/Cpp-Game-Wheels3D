@@ -1,5 +1,6 @@
 #pragma once
 #include "Object.h"
+#include "Wheel.h"
 
 class HUD :
 	public Object
@@ -12,10 +13,8 @@ public:
 	void Update();
 	void Render();
 	void HandleEvents() {}
-	void SetSpeed(float *Speed) { speed = Speed; }
-	void SetTimer(double *Time) { timer = Time; }
-	void SetGear(int *Gear)		{ gear = Gear; }
-
+	void AttachPlayer(Wheel* user) { player = user; }
+	
 	std::string text;
 	GLuint plane;
 	int indexCount;
@@ -34,5 +33,6 @@ public:
 	bool showStopLight;
 	int stopLightDelay;
 	int lamp; 
+	Wheel* player;
 };
 

@@ -6,7 +6,6 @@
 
 bool Logo::OnEnter()
 {
-	SOUND->Play(INTROSOUND);
 	Shader::Start();
 	Input->InitialiseJoysticks();
 	transparency = 0.0f;
@@ -99,6 +98,7 @@ void Logo::HandleEvents()
 	{
 		if (JOY_A || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
+			SOUND->Play(SELECTSOUND, SampleVolume);
 			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
 			SDL_Delay(100);
@@ -109,6 +109,7 @@ void Logo::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
+			SOUND->Play(SELECTSOUND, SampleVolume);
 			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
 		}

@@ -8,9 +8,18 @@
 #define PLAY Sound::Instance()->playSound
 #define PAUSE Sound::Instance()->pauseSound
 #define SOUND Sound::Instance()
-#define NUMBEROFSOUNDS 2
-#define INTROSOUND 0
-#define ENGINELOOP 1
+#define NUMBEROFSOUNDS 10
+#define SELECTSOUND 0
+#define BACKSOUND 1
+#define ACCEPTSOUND 2
+#define MUSICTITLE 3
+#define MUSICSETUP 4
+#define MUSICSCOREBOARD 5
+#define MUSICMENU 6
+#define MUSICCREDITS 7
+#define ENGINELOOP 8
+#define QUITSOUND 9
+
 
 class Sound
 {

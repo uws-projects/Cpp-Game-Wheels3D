@@ -17,6 +17,7 @@ void Menu::Update()
 
 bool Menu::OnEnter()
 {
+	SOUND->Play(MUSICMENU, MusicVolume);
 	option = HELP;
 	texture[HELP] = Load::PNG(".\\model\\menu\\help.png");
 	texture[NEWGAME] = Load::PNG(".\\model\\menu\\race.png");
@@ -78,6 +79,7 @@ void Menu::HandleEvents()
 		{
 			if (JOY_A)
 			{
+				SOUND->Play(BACKSOUND, SampleVolume);
 				option = NEWGAME;
 				SDL_Delay(250);
 			}
@@ -91,6 +93,7 @@ void Menu::HandleEvents()
 			{
 				if (option < NUMBEROFOPTIONS)
 				{
+					SOUND->Play(SELECTSOUND, SampleVolume);
 					option++;
 					SDL_Delay(150);
 				}
@@ -99,6 +102,7 @@ void Menu::HandleEvents()
 			{
 				if (option > 1)
 				{
+					SOUND->Play(SELECTSOUND, SampleVolume);
 					option--;
 					SDL_Delay(150);
 				}
@@ -106,12 +110,14 @@ void Menu::HandleEvents()
 			// if we press Y we display the help again
 			if (JOY_Y) 
 			{
+				SOUND->Play(ACCEPTSOUND, SampleVolume);
 				option = HELP;
 				SDL_Delay(150);
 			}
 			// if we press A, we execute the selected option
 			if (JOY_A)
 			{
+				SOUND->Play(ACCEPTSOUND, SampleVolume);
 				switch (option)
 				{
 				case NEWGAME: option = LOADING;
@@ -122,7 +128,12 @@ void Menu::HandleEvents()
 					break;
 				case ABOUT: std::cout << "Launching About\n";//Application::Instance()->GetStateMachine()->PushState(new About());
 					break;
-				case QUIT: Application::Instance()->Quit();
+				case QUIT: {
+							   SOUND->Pause(MUSICMENU);
+							   SOUND->Play(QUITSOUND, SampleVolume);
+							   SDL_Delay(2100);
+							   Application::Instance()->Quit();
+				}
 				default:
 					break;
 				}
@@ -135,8 +146,23 @@ void Menu::HandleEvents()
 	}
 }
 
+bool skipOnce = true;
+
 void Menu::Render()
 {
+
+	if (option == LOADING)
+	{
+		if (skipOnce)
+		{
+			skipOnce = false;
+		}
+		else
+		{
+			Application::Instance()->GetStateMachine()->PushState(new Play());
+		}
+	}
+
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
@@ -151,8 +177,5 @@ void Menu::Render()
 		glBindVertexArray(0);
 	}
 	Shader::Pop();
-
-	if (option == LOADING)
-		Application::Instance()->GetStateMachine()->PushState(new Play());
 
 }

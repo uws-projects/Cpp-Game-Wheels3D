@@ -16,7 +16,7 @@ public:
 
 private:
 	unsigned option;
-	GLuint texture[6];
+	GLuint texture[7];
 	GLuint model;
 
 };

@@ -27,7 +27,7 @@ void HUD::Update()
 {
 	// building Speed texture
 	{ 
-		int s = (*speed);  
+		int s = player->Velocity();
 		text = std::to_string(abs(s)); 
 		SpeedTexture = Load::Text(text.c_str()); 
 	}
@@ -35,7 +35,7 @@ void HUD::Update()
 	float now = SDL_GetTicks();
 	// building Timer texture
 	{
-		double t = (*timer);
+		double t = player->StartTimer();
 		if (t != 0)	// if the race has started, so time elapsed is not 0
 		{
 			if (showStopLight == false)
@@ -82,7 +82,15 @@ void HUD::Update()
 				result += std::to_string(mili);
 
 				// and build the texture based on that string
-				TimerTexture = Load::Text(result.c_str());
+				if (!player->IsRaceFinished()) {
+					player->SetFinalTime(startTime);
+					TimerTexture = Load::Text(result.c_str());
+				}
+				else
+				{
+					std::cout << "Final Time:" << player->RaceResult();
+				}
+
 			}
 
 		}
@@ -90,7 +98,7 @@ void HUD::Update()
 	}
 	// building gear texture
 	{
-		int g = (*gear);
+		int g = player->Gear();
 		
 		switch (g)
 		{

@@ -41,6 +41,10 @@ public:
 	void AddSpeedPenalty()	{ velocity *= VelocityPenalty; }
 	void DetachCamera()		{ detachedCamera = true; }
 	void DetachControl()	{ currentGear = NEUTRAL; canRace = false; }
+	void FinishRace()		{ raceComplete = true; }
+	bool IsRaceFinished()	{ return raceComplete; }
+	void SetFinalTime(float result)		{ finalTime = result; }
+	float RaceResult()		{ return finalTime; }
 
 	void ApplySensibility()		{ damageAmount = 0.3f; }
 	void ApplyHappyWheel()		{ boostTurn = 2.0f; }
@@ -58,7 +62,6 @@ public:
 
 	~Wheel();
 
-protected:
 private:
 	/* 
 	wheel is 205/55/R16
@@ -130,7 +133,8 @@ private:
 	bool canGearUp;
 	bool canGearDown;
 	bool detachedCamera;			// used when passing the finish line
-
+	bool raceComplete;				// used to stop updating timer
+	float finalTime;				// result of the race
 
 	void initializePhysics();
 	void updatePhysics();
@@ -140,6 +144,7 @@ private:
 	float boostTurbo = 1.0f;
 	float boostTurn = 1.0f;
 	float damageAmount = 0.01f;
+
 	bool reverseControls;
 	bool automaticGearBox;
 	bool canControl;

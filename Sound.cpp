@@ -5,7 +5,15 @@ HSAMPLE Sound::soundlist[NUMBEROFSOUNDS] = {};
 
 void Sound::Initialize()
 {
-	soundlist[INTROSOUND] = Load(".\\samples\\use.wav");
+	soundlist[ACCEPTSOUND] = Load(".\\samples\\accept.wav");
+	soundlist[SELECTSOUND] = Load(".\\samples\\scroll.wav");
+	soundlist[BACKSOUND] = Load(".\\samples\\back.wav");
+	soundlist[MUSICTITLE] = Load(".\\music\\music01.ogg");
+	soundlist[MUSICCREDITS] = Load(".\\music\\music02.ogg");
+	soundlist[MUSICSCOREBOARD] = Load(".\\music\\music03.ogg");
+	soundlist[MUSICSETUP] = Load(".\\music\\music04.ogg");
+	soundlist[MUSICMENU] = Load(".\\music\\music05.ogg");
+	soundlist[QUITSOUND] = Load(".\\samples\\quit.wav");
 
 	// Comment one of these two to check the other how it sounds
 	soundlist[ENGINELOOP] = Load(".\\samples\\car_engine_SuperLoop.wav");
