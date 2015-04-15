@@ -27,9 +27,11 @@ public:
 	GLuint SpeedTexture;
 	GLuint TimerTexture;
 	GLuint GearTexture;
-	GLuint BackgroundTexture;
+	GLuint hud[2];
 	GLuint StopLight[4];
-
+	GLuint DamageTexture[4];
+	GLuint DamageText;
+	int *leftLevel, *rightLevel, *gearStatus;
 	bool showStopLight;
 	int stopLightDelay;
 	int lamp; 

@@ -10,26 +10,44 @@ void HUD::Initialize()
 	indexCount = Load::meshCount();
 	text = "0";
 	SpeedTexture = Load::Text(text.c_str());
+	text = "0%";
+	DamageText = Load::Text(text.c_str());
 	text = "00:00:000";
 	TimerTexture = Load::Text(text.c_str());
 	text = "N";
 	GearTexture = Load::Text(text.c_str());
-	BackgroundTexture = Load::PNG("model/hud.png");
+	hud[0] = Load::PNG(".\\model\\hud\\hud_released.png");
+	hud[1] = Load::PNG(".\\model\\hud\\hud_pressed.png");
 	showStopLight = false;
 	StopLight[0] = Load::PNG(".\\model\\stoplight\\0.png");
 	StopLight[1] = Load::PNG(".\\model\\stoplight\\1.png");
 	StopLight[2] = Load::PNG(".\\model\\stoplight\\2.png");
 	StopLight[3] = Load::PNG(".\\model\\stoplight\\3.png");
 	lamp = 0;
+	DamageTexture[0] = Load::PNG(".\\model\\hud\\damage0.png");
+	DamageTexture[1] = Load::PNG(".\\model\\hud\\damage1.png");
+	DamageTexture[2] = Load::PNG(".\\model\\hud\\damage2.png");
+	DamageTexture[3] = Load::PNG(".\\model\\hud\\damage3.png");
+	leftLevel = &player->GetLeftLevel();
+	rightLevel = &player->GetRightLevel();
+	gearStatus = &player->GetGearStatus();
 }
 
 void HUD::Update()
 {
 	// building Speed texture
-	{ 
+	{
 		int s = player->Velocity();
-		text = std::to_string(abs(s)); 
-		SpeedTexture = Load::Text(text.c_str()); 
+		text = std::to_string(abs(s));
+		SpeedTexture = Load::Text(text.c_str());
+	}
+
+	// building Damage Text texture
+	{
+	int d = player->GetDamage();
+	text = std::to_string(d);
+	text += "%";
+	DamageText = Load::Text(text.c_str());
 	}
 
 	float now = SDL_GetTicks();
@@ -130,7 +148,7 @@ void HUD::Render()
 		// draw background first
 		Shader::Push();
 		{
-			Shader::Bind(0, "tex", BackgroundTexture);
+			Shader::Bind(0, "tex", hud[*gearStatus]);
 			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(0.0f, 0.0f, 0.1f));
 			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(1.0f, 1.0f, 0.1f));
 			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
@@ -183,6 +201,46 @@ void HUD::Render()
 		}
 		Shader::Pop();
 
+		// draw damage now
+		Shader::Push();
+		{
+			// left side
+			Shader::Bind(0, "tex", DamageTexture[*leftLevel]);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(0.818f, -0.74f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.03f, 0.23f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+		Shader::Push();
+		{
+			// right side
+			Shader::Bind(0, "tex", DamageTexture[*rightLevel]);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(0.878f, -0.74f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(-0.03f, 0.23f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+		Shader::Push();
+		{
+			// and the damage value
+			Shader::Bind(0, "tex", DamageText);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(0.848f, -0.73f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.02f, 0.05f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
 		if (showStopLight)
 		{
 			Shader::Bind(0, "tex", StopLight[lamp]);

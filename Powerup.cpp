@@ -1,11 +1,12 @@
 #include "Powerup.h"
 
-#define SENSIBILITY 0
+
+#define SHIELD 0
 #define HAPPYWHEEL 1
 #define TURBO 2
-#define REPAIR 5
+#define REPAIR 3
 #define REVERSECONTROLS 4
-#define SHIELD 3
+#define SENSIBILITY 5
 #define INSTANTSTOP 6
 
 void Powerup::Initialize()
@@ -26,14 +27,13 @@ Powerup::Powerup(Wheel * w, int powerType, glm::vec3 Position, int (&tex)[7])
 	type = powerType;
 	position = Position;
 
-	texture[SENSIBILITY] = tex[0];
-	texture[HAPPYWHEEL] = tex[1];
-	texture[INSTANTSTOP] = tex[2];
-	texture[REPAIR] = tex[3];
-	texture[REVERSECONTROLS] = tex[4];
-	texture[SHIELD] = tex[5];
-	texture[TURBO] = tex[6];
-
+	texture[SHIELD] = tex[SHIELD];
+	texture[HAPPYWHEEL] = tex[HAPPYWHEEL];
+	texture[TURBO] = tex[TURBO];
+	texture[REPAIR] = tex[REPAIR];
+	texture[REVERSECONTROLS] = tex[REVERSECONTROLS];
+	texture[SENSIBILITY] = tex[SENSIBILITY];
+	texture[INSTANTSTOP] = tex[INSTANTSTOP];
 }
 
 bool Powerup::contact()

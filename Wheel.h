@@ -37,19 +37,23 @@ public:
 	double& StartTimer()	{ return startTime; }
 	int& Gear()				{ return currentGear; }
 	
-	void AddDamage()		{ damage += damageAmount; }
+	void AddLeftDamage()		{ leftDamage += damageAmount; }
+	void AddRightDamage()		{ rightDamage += damageAmount; }
 	void AddSpeedPenalty()	{ velocity *= VelocityPenalty; }
 	void DetachCamera()		{ detachedCamera = true; }
 	void DetachControl()	{ currentGear = NEUTRAL; canRace = false; }
 	void FinishRace()		{ raceComplete = true; }
 	bool IsRaceFinished()	{ return raceComplete; }
 	void SetFinalTime(float result)		{ finalTime = result; }
-	float RaceResult()		{ return finalTime; }
-
+	float RaceResult()			{ return finalTime; }
+	int &GetLeftLevel()			{ return leftDamageLevel; }
+	int &GetRightLevel()		{ return rightDamageLevel; }
+	int GetDamage()				{ return (int)damage; }
+	int &GetGearStatus()		{ return gearStatus; }
 	void ApplySensibility()		{ damageAmount = 0.3f; }
 	void ApplyHappyWheel()		{ boostTurn = 2.0f; }
 	void ApplyInstantStop()		{ velocity = 0.0f; }
-	void ApplyRepair()			{ damage = 0; }
+	void ApplyRepair()			{ leftDamage = rightDamage = 0; }
 	void ApplyReverseControls() { reverseControls = true; }
 	void ApplyShield()			{ damageAmount = 0; }
 	void ApplyTurbo()			{ boostTurbo = 2.0f; }
@@ -107,7 +111,9 @@ private:
 	float Acceleration;			// Acceleration
 
 	float damage;
-	
+	float leftDamage;
+	float rightDamage;
+	int leftDamageLevel, rightDamageLevel;
 	GLuint model;
 	GLuint rubber;
 	Light light;
@@ -130,6 +136,7 @@ private:
 
 	double startTime;
 
+	int gearStatus;
 	bool canGearUp;
 	bool canGearDown;
 	bool detachedCamera;			// used when passing the finish line
@@ -149,5 +156,7 @@ private:
 	bool automaticGearBox;
 	bool canControl;
 	bool canRace;
+
+
 };
 

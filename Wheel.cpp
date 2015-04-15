@@ -39,7 +39,12 @@ void Wheel::Initialize()
 	scale = glm::vec3(1.0f);
 	position = glm::vec3(37.2421f, RADIUS - tyreAspectRatio, 19.7211f-RADIUS);
 
+	leftDamage = 0.0f;
+	rightDamage = 0.0f;
 	damage = 0.0f;
+	leftDamageLevel = 0;
+	rightDamageLevel = 0;
+	gearStatus = 1;
 	detachedCamera = false;
 	canControl = false;
 	canRace = false;
@@ -113,9 +118,14 @@ void Wheel::gearDown()
 
 void Wheel::Update()
 {
+	if (PRESSING(SDL_SCANCODE_F11)) {
+		std::cout << "\nDamage: " << damage << " Llevel: " << leftDamageLevel << "LDamage: " << leftDamage << " RLevel: " << rightDamageLevel << "RDamage: " << rightDamage;
+	}
 	// comment next line to disable collisions
 	raceTrack->Update();
-
+	damage = leftDamage + rightDamage;
+	leftDamageLevel = (int) ((leftDamage*2) / 10);
+	rightDamageLevel= (int) ((rightDamage*2) / 10);
 	// gearbox automatic down shifting
 	if (currentGear == 6 && velocity < 17) currentGear = 5;
 	if (currentGear == 5 && velocity < 14) currentGear = 4;
@@ -356,17 +366,31 @@ void Wheel::HandleEvents()
 			}
 
 			// gear down on release of LB
-			if (canGearDown)
+			if (canGearDown && canRace)
 			{
 				if (JOY_LB) {
-					canGearDown = false;
 					if (reverseControls) gearUp(); else gearDown();
 				}
 			}
 
 			// update toggles
-			if (JOY_RB == SDL_RELEASED) canGearUp = true;
-			if (JOY_LB == SDL_RELEASED) canGearDown = true;
+			if (JOY_RB == SDL_RELEASED)
+			{
+				canGearUp = true;
+			}
+			if (JOY_LB == SDL_RELEASED)
+			{
+				canGearDown = true;
+			}
+
+			if (JOY_LB || JOY_RB)
+			{
+				gearStatus = 1;
+			}
+			else
+			{
+				gearStatus = 0;
+			}
 	
 			// pressing start enables fast zoom
 			if (JOY_START)
