@@ -1,14 +1,5 @@
 #include "Powerup.h"
 
-
-#define SHIELD 0
-#define HAPPYWHEEL 1
-#define TURBO 2
-#define REPAIR 3
-#define REVERSECONTROLS 4
-#define SENSIBILITY 5
-#define INSTANTSTOP 6
-
 void Powerup::Initialize()
 {
 	//Initialize the power-up object
@@ -69,7 +60,7 @@ void Powerup::Update()
 		case SENSIBILITY:		wheel->ApplySensibility();		alarm = 10000; break;
 		case HAPPYWHEEL:		wheel->ApplyHappyWheel();		alarm = 10000; break;
 		case TURBO:				wheel->ApplyTurbo();			alarm = 3000; break;
-		case SHIELD:			wheel->ApplyShield();			alarm = 10000; break;
+		case SHIELD:			wheel->ApplyShield();			alarm = 5000; break;
 		case REVERSECONTROLS:	wheel->ApplyReverseControls();	alarm = 3000; break;
 		case REPAIR:			wheel->ApplyRepair();			alarm = 10000; break;
 		case INSTANTSTOP:		wheel->ApplyInstantStop();		alarm = 10000; break;
@@ -134,4 +125,6 @@ void Powerup::HandleEvents()
 
 Powerup::~Powerup()
 {
+	delete wheel;
+	delete Powercube;
 }

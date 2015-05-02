@@ -17,7 +17,7 @@ Wheel::Wheel()
 {
 }
 
-bool raceStarted = false;
+
 
 // better texture wrong shape roata obj, cull-face back, texture texture.bmp
 
@@ -33,7 +33,6 @@ void Wheel::Initialize()
 
 	light.position = glm::vec4(position, 1.0f);
 
-	
 	direction = 0;
 	rotationAngle = 0;
 	Acceleration = 0;
@@ -46,10 +45,18 @@ void Wheel::Initialize()
 	damage = 0.0f;
 	leftDamageLevel = 0;
 	rightDamageLevel = 0;
+	velocityPenalty = 0.95f;
 	gearStatus = 1;
 	detachedCamera = false;
 	canControl = false;
 	canRace = false;
+	raceStarted = false;
+	sensibility = false;
+	happyWheel = false;
+	shield = false;
+	turbo = false;
+	reverseControls = false;
+
 
 	cameraWidthX = 0.0f;
 	cameraWidthZ = 0.0f;
@@ -161,7 +168,9 @@ void Wheel::Update()
 		cameraPosition.y = cameraHeight;
 		if (cameraHeight > 15.0f)
 		{
-			SCORE->AddScore(finalTime, "Tinu");
+			SOUND->PauseMusic();
+			SOUND->Pause(ENGINELOOP);
+			SCORE->AddScore(finalTime, "Daniel");
 			Application::Instance()->GetStateMachine()->PopState();
 			Application::Instance()->GetStateMachine()->PopState();
 			Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
@@ -238,7 +247,7 @@ void Wheel::updatePhysics()
 
 	// if the velocity is too close to 0, make it 0
 	if (abs(velocity) < 0.082) {
-		velocity = 0.0f; 
+		velocity = 0.0f;
 	}
 
 	switch (currentGear)
@@ -259,7 +268,7 @@ void Wheel::updatePhysics()
 					F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
 					F_long = F_traction + F_drag + F_rr;
 				}
-				SOUND->Play(ENGINELOOP, EngineVolume, (44100 + abs(velocity) * 3000.0f));
+				SOUND->Play(ENGINELOOP, EngineVolume, (1000 + 5000 * abs(velocity)));
 	}
 		break;
 	case 0:	// neutral case
@@ -274,9 +283,9 @@ void Wheel::updatePhysics()
 				}
 				else
 				{
-					F_long = F_drag + F_rr;	
+					F_long = F_drag + F_rr;
 				}
-				SOUND->Play(ENGINELOOP, EngineVolume, 44100 + 800.0f * abs(EnginePower));
+				SOUND->Play(ENGINELOOP, EngineVolume, 1000 * abs(EnginePower));
 	}
 		break;
 	default: // regular gear
@@ -296,7 +305,7 @@ void Wheel::updatePhysics()
 					 F_long = F_traction + F_drag + F_rr;
 				 }
 				 // play sound at volume 0.01, with a freq multiplier of 2000 
-				 SOUND->Play(ENGINELOOP, EngineVolume, (44100 + velocity * 2000.0f));
+				 SOUND->Play(ENGINELOOP, EngineVolume, (1000 + 5000 * abs(velocity)));
 	}
 		break;
 	}
@@ -321,8 +330,7 @@ void Wheel::HandleEvents()
 			cameraHeight -= 0.3f;
 			float test = (200.0f - cameraHeight) / 10000.0f;
 			if (test > EngineVolume) test = EngineVolume;
-			std::cout << "Sound volume: " << test << "\n";
-			SOUND->Play(ENGINELOOP, test, 44100 + 700.0f * abs(EnginePower));
+			SOUND->Play(ENGINELOOP, test, 44100 + 600.0f * abs(EnginePower));
 			canGearUp = false;
 		}
 		else

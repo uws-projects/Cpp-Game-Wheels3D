@@ -42,10 +42,17 @@
 #define PI 3.14159265359f
 #endif
 
+#define SHIELD 0
+#define HAPPYWHEEL 1
+#define TURBO 2
+#define REPAIR 3
+#define REVERSECONTROLS 4
+#define SENSIBILITY 5
+#define INSTANTSTOP 6
+
 #define EngineVolume 0.05f
-#define VelocityPenalty 0.95f
-#define MusicVolume 0.15f
-#define SampleVolume 0.2f
+#define MusicVolume 0.5f
+#define SampleVolume 0.18f
 
 // joystick buttons
 #define BUTTON_A 10
@@ -65,3 +72,27 @@
 
 //#define FULLSCREEN true
 #define FULLSCREEN false
+
+class Settings
+{
+public:
+	static Settings* Instance()
+	{
+		if (s_pInstance == 0)
+		{
+			s_pInstance = new Settings();
+			Initialize();
+			return s_pInstance;
+		}
+		return s_pInstance;
+	}
+	~Settings() {}
+
+private:
+	Settings()
+	{
+	}
+	static void Initialize();
+
+	static Settings* s_pInstance;
+};

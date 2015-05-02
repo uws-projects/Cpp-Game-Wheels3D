@@ -306,6 +306,7 @@ GLuint Load::Text(const char * str, bool withDigitsFont) {
 
 	SDL_Surface *stringImage;
 	stringImage = TTF_RenderText_Blended(font, str, colour);
+	
 
 	if (stringImage == NULL)
 		//exitFatalError("String surface not created.");
@@ -344,6 +345,9 @@ GLuint Load::Text(const char * str, bool withDigitsFont) {
 	// SDL surface was used to generate the texture but is no longer
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
+	
+//	delete font;
+//	delete stringImage;
 	return texture;
 }
 

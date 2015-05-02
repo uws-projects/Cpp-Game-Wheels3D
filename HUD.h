@@ -36,5 +36,7 @@ public:
 	int stopLightDelay;
 	int lamp; 
 	Wheel* player;
+	GLuint sens_on, sens_off, happy_on, happy_off, shield_on, shield_off, turbo_on, turbo_off, rev_on, rev_off;
+	GLuint *sens, *happy, *shield, *turbo, *rev;
 };
 

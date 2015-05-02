@@ -24,10 +24,6 @@ public:
 			s_pInstance = new Highscore();
 			load();
 			formatData();
-			for (int i = 0; i < 10; i++) {
-				playerTexture[i] = Load::Text(player[i].playerNames.c_str());
-				scoreTexture[i] = Load::Text(std::to_string(player[i].playerScore).c_str());
-			}
 			return s_pInstance;
 		}
 		return s_pInstance;
@@ -35,13 +31,14 @@ public:
 	~Highscore() {}
 	GLuint GetPlayerTexture(int id) { return playerTexture[id]; }
 	GLuint GetScoreTexture(int id) { return scoreTexture[id]; }
-	string GetPlayer(int id) { return player[id].playerNames; };
-	float GetScore(int id) { return player[id].playerScore; }
+	string GetPlayer(int id) { return player[id].playerNames; }
+	string GetScore(int id) { return player[id].stringScore; }
 	void Reset();
+	void Save();
 	void AddScore(float score, string name);
 
 private:
-	void save();
+	static string miliToDigit(int startTime);
 	static void load();
 	static void formatData();
 	static highscore player[10], temp;

@@ -2,45 +2,18 @@
 #include "Application.h"
 #include "Menu.h"
 
-string miliToDigit(float startTime)
-{
-	int minutes = (int)startTime / 60000;
-	int seconds = (int)(startTime - (minutes * 60000)) / 1000;
-	int mili = (int)(startTime - minutes * 60000 - seconds * 1000);
-	std::string result = "";
-	if (minutes < 10)
-	{
-		result += "0" + std::to_string(minutes) + ":";
-	}
-	else
-	{
-		result += std::to_string(minutes) + ":";
-	}
-	if (seconds < 10)
-	{
-		result += "0" + std::to_string(seconds) + ":";
-	}
-	else
-	{
-		result += std::to_string(seconds) + ":";
-	}
-	// add all the formated text in a string
-	result += std::to_string(mili);
-	return result;
-}
-
 bool HighScoreScreen::OnEnter()
 {
+	SOUND->PauseMusic();
+	SOUND->Music(MUSICHIGHSCORE, MusicVolume);
 	texture = Load::PNG(".\\model\\menu\\HighscoreMenu.png");
 	model = Load::Obj(".\\model\\cubeModel.obj");
 	indexCount = Load::meshCount();
 	// create rectangle to cover screen based on one scalable variable
 
 	for (int i = 0; i < 10; i++) {
-		string name = SCORE->GetPlayer(i);
-		float scor = SCORE->GetScore(i);
-		playerTextures[i] = Load::Text(name.c_str(), false);
-		scoreTextures[i] = Load::Text(miliToDigit(SCORE->GetScore(i)).c_str());
+		playerTextures[i] = Load::Text(SCORE->GetPlayer(i).c_str(), false);
+		scoreTextures[i] = Load::Text(SCORE->GetScore(i).c_str());
 	}
 	return true;
 }
@@ -85,7 +58,7 @@ void HighScoreScreen::Render()
 		{
 			Shader::Push();
 			{
-				// draw background
+				// draw player name texture
 				Shader::Bind(0, "tex", playerTextures[i]);
 				Shader::Top() = glm::translate(Shader::Top(), glm::vec3(x, y - distY * i, 0.1f));
 				Shader::Top() = glm::scale(Shader::Top(), glm::vec3(sx, sy, 0.1f));
@@ -102,7 +75,7 @@ void HighScoreScreen::Render()
 		{
 			Shader::Push();
 			{
-				// draw background
+				// draw player time texture
 				Shader::Bind(0, "tex", scoreTextures[i]);
 				Shader::Top() = glm::translate(Shader::Top(), glm::vec3(x+ 0.26f, y - distY * i, 0.1f));
 				Shader::Top() = glm::scale(Shader::Top(), glm::vec3(sx, sy, 0.1f));
@@ -124,11 +97,19 @@ void HighScoreScreen::HandleEvents()
 	// we can skip to next state by pressing either escape or start button on gamepad
 	if (JOY->JoysticksInitialised())
 	{
-		if (JOY_A || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
+		if (JOY_B || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
 			SOUND->Play(SELECTSOUND, SampleVolume);
 			SDL_Delay(100);
 			Application::Instance()->GetStateMachine()->PopState();
+		}
+		if (JOY_X)
+		{
+			SCORE->Reset();
+			for (int i = 0; i < 10; i++) {
+				playerTextures[i] = Load::Text(SCORE->GetPlayer(i).c_str(), false);
+				scoreTextures[i] = Load::Text(SCORE->GetScore(i).c_str());
+			}
 		}
 	}
 	else

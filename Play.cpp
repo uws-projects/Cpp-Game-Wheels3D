@@ -21,9 +21,13 @@ bool Play::OnEnter()
 	tex[2] = Load::PNG("model/powerups/turbo.png");
 	tex[3] = Load::PNG("model/powerups/repair.png");
 	tex[4] = Load::PNG("model/powerups/reverse_controls.png");
-	tex[5] = Load::PNG("model/powerups/fog.png");
+	tex[5] = Load::PNG("model/powerups/sensibility.png");
 	tex[6] = Load::PNG("model/powerups/instant_stop.png");	
 	
+	MusicSetup.length = 71000; MusicSetup.playing = false;		// 72 seconds track
+	MusicCredits.length = 42000; MusicCredits.playing = false;
+	MusicTitle.length = 73000; MusicTitle.playing = false;
+	MusicScoreboard.length = 43000; MusicScoreboard.playing = false;
 
 	m_object.push_back(camera);
 	m_object.push_back(skybox);
@@ -51,15 +55,56 @@ bool Play::OnEnter()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	SOUND->Pause(MUSICMENU);
-	SOUND->Play(MUSICSETUP, MusicVolume);
+	
+	// set starting music
+	SOUND->PauseMusic();
+	SOUND->Music(MUSICSETUP, MusicVolume);
+	MusicSetup.playing = true;
+	musicTimer = SDL_GetTicks();
 
 	return true;
 }
 
 void Play::Update()
 {
+	int playTime = SDL_GetTicks() - musicTimer;
+	if (MusicSetup.playing) {
+		if (playTime> MusicSetup.length) {
+			MusicSetup.playing = false;
+			SOUND->Music(MUSICTITLE, MusicVolume);
+			musicTimer = SDL_GetTicks();
+			playTime = SDL_GetTicks() - musicTimer;
+			MusicTitle.playing = true; 
+		}
+	}
+	if (MusicTitle.playing) {
+		if (playTime > MusicTitle.length) {
+			MusicTitle.playing = false;
+			SOUND->Music(MUSICCREDITS, MusicVolume);
+			musicTimer = SDL_GetTicks();
+			playTime = SDL_GetTicks() - musicTimer;
+			MusicCredits.playing = true;
+		}
+	}
+	if (MusicCredits.playing) {
+		if (playTime > MusicCredits.length) {
+			MusicCredits.playing = false;
+			SOUND->Music(MUSICSCOREBOARD, MusicVolume);
+			musicTimer = SDL_GetTicks();
+			playTime = SDL_GetTicks() - musicTimer;
+			MusicScoreboard.playing = true;
+		}
+	}
+	if (MusicScoreboard.playing) {
+		if (playTime > MusicScoreboard.length) {
+			MusicTitle.playing = false;
+			SOUND->Music(MUSICSETUP, MusicVolume);
+			musicTimer = SDL_GetTicks();
+			playTime = SDL_GetTicks() - musicTimer;
+			MusicSetup.playing = true;
+		}
+	}
+
 	camera->Target() = player->CameraAt();
 	camera->Position() = player->CameraPosition();
 	for (unsigned int i = 0; i < m_object.size(); i++)
@@ -107,10 +152,3 @@ bool Play::OnExit()
 	return true;
 }
 
-Play::~Play()
-{
-	delete camera;
-	delete skybox;
-	delete world;
-	delete player;
-}

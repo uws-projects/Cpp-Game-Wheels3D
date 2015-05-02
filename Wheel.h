@@ -2,6 +2,7 @@
 #include "Object.h"
 #include "Camera.h"
 #include "Sound.h"
+#include <vector>
 
 #define KG 1.0f
 #define S 0.01666666666f
@@ -37,34 +38,36 @@ public:
 	double& StartTimer()	{ return startTime; }
 	int& Gear()				{ return currentGear; }
 	
-	void AddLeftDamage()		{ leftDamage += damageAmount; }
-	void AddRightDamage()		{ rightDamage += damageAmount; }
-	void AddSpeedPenalty()	{ velocity *= VelocityPenalty; }
-	void DetachCamera()		{ detachedCamera = true; }
-	void DetachControl()	{ currentGear = NEUTRAL; canRace = false; }
-	void FinishRace()		{ raceComplete = true; }
-	bool IsRaceFinished()	{ return raceComplete; }
+	void AddLeftDamage()				{ leftDamage += damageAmount; }
+	void AddRightDamage()				{ rightDamage += damageAmount; }
+	void AddSpeedPenalty()				{ velocity *= velocityPenalty; }
+	void DetachCamera()					{ detachedCamera = true; }
+	void DetachControl()				{ currentGear = NEUTRAL; canRace = false; }
+	void FinishRace()					{ raceComplete = true; }
+	bool IsRaceFinished()				{ return raceComplete; }
 	void SetFinalTime(float result)		{ finalTime = result; }
-	float RaceResult()			{ return finalTime; }
-	int &GetLeftLevel()			{ return leftDamageLevel; }
-	int &GetRightLevel()		{ return rightDamageLevel; }
-	int GetDamage()				{ return (int)damage; }
-	int &GetGearStatus()		{ return gearStatus; }
-	void ApplySensibility()		{ damageAmount = 0.3f; }
-	void ApplyHappyWheel()		{ boostTurn = 2.0f; }
-	void ApplyInstantStop()		{ velocity = 0.0f; }
-	void ApplyRepair()			{ leftDamage = rightDamage = 0; }
-	void ApplyReverseControls() { reverseControls = true; }
-	void ApplyShield()			{ damageAmount = 0; }
-	void ApplyTurbo()			{ boostTurbo = 2.0f; }
+	float RaceResult()					{ return finalTime; }
+	int &GetLeftLevel()					{ return leftDamageLevel; }
+	int &GetRightLevel()				{ return rightDamageLevel; }
+	int GetDamage()						{ return (int)damage; }
+	int &GetGearStatus()				{ return gearStatus; }
+	void ApplySensibility()				{ damageAmount = 0.3f;			SOUND->Sensibility(SampleVolume); sensibility = true; }
+	void ApplyHappyWheel()				{ boostTurn = 2.0f;				SOUND->Happy(SampleVolume); happyWheel = true; }
+	void ApplyInstantStop()				{ velocity = 0.0f;				SOUND->Stop(SampleVolume); }
+	void ApplyRepair()					{ leftDamage = rightDamage = 0; SOUND->Repair(SampleVolume); }
+	void ApplyReverseControls()			{ reverseControls = true;		SOUND->Reverse(SampleVolume); }
+	void ApplyShield()					{ damageAmount = 0;	velocityPenalty = 1.0f;	SOUND->Shield(SampleVolume); shield = true; }
+	void ApplyTurbo()					{ boostTurbo = 2.0f;			SOUND->Turbo(SampleVolume); turbo = true; }
 
-	void UndoSensibility()		{ damageAmount = 0.01f; }
-	void UndoHappyWheel()		{ boostTurn = 1.0f; }
+	void UndoSensibility()		{ damageAmount = 0.05f; sensibility = false; }
+	void UndoHappyWheel()		{ boostTurn = 1.0f; happyWheel = false; }
 	void UndoReverseControls()	{ reverseControls = false; }
-	void UndoShield()			{ damageAmount = 0.01f; }
-	void UndoTurbo()			{ boostTurbo = 1.0f; }
+	void UndoShield()			{ damageAmount = 0.05f; velocityPenalty = 0.95; shield = false; }
+	void UndoTurbo()			{ boostTurbo = 1.0f; turbo = false; }
 
 	~Wheel();
+
+	bool sensibility, happyWheel, shield, turbo, reverseControls;
 
 private:
 	/* 
@@ -109,7 +112,7 @@ private:
 	float rotationAngle;
 	float velocity;				// Velocity
 	float Acceleration;			// Acceleration
-
+	float velocityPenalty;
 	float damage;
 	float leftDamage;
 	float rightDamage;
@@ -150,13 +153,12 @@ private:
 
 	float boostTurbo = 1.0f;
 	float boostTurn = 1.0f;
-	float damageAmount = 0.01f;
+	float damageAmount = 0.05f;
 
-	bool reverseControls;
 	bool automaticGearBox;
 	bool canControl;
 	bool canRace;
-
+	bool raceStarted;
 
 };
 

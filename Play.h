@@ -8,12 +8,22 @@
 #include "Powerup.h"
 #include "Cube.h"
 
+struct music {
+	int length;
+	bool playing;
+
+	music() { length = 0; playing = false; }
+	music(int l, bool p) { length: l; playing: p; }
+};
+
 class Play :
 	public AbstractState
 {
 public:
 	Play();
-	~Play();
+	~Play() {
+		delete player; delete camera; delete skybox; delete world; delete hud;
+	}
 
 	void Update();
 	void Render();
@@ -31,9 +41,9 @@ private:
 	Skybox *skybox;
 	World *world;
 	HUD *hud;
-	Powerup *powerupHappyWheel;
-	Powerup *powerupTwister;
-
+	int musicTimer;
+	
+	music MusicSetup, MusicCredits, MusicTitle, MusicScoreboard;
 	std::vector <Object*> m_object;
 };
 

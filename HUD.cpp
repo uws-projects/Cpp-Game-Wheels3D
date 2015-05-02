@@ -31,10 +31,36 @@ void HUD::Initialize()
 	leftLevel = &player->GetLeftLevel();
 	rightLevel = &player->GetRightLevel();
 	gearStatus = &player->GetGearStatus();
+
+
+	shield_on = Load::PNG("model/powerups/shield.png");
+	shield_off = Load::PNG("model/powerups/shield_off.png");
+	happy_on = Load::PNG("model/powerups/happy_wheel.png");
+	happy_off = Load::PNG("model/powerups/happy_wheel_off.png");
+	turbo_on = Load::PNG("model/powerups/turbo.png");
+	turbo_off = Load::PNG("model/powerups/turbo_off.png");
+	rev_on = Load::PNG("model/powerups/reverse_controls.png");
+	rev_off = Load::PNG("model/powerups/reverse_controls_off.png");
+	sens_on = Load::PNG("model/powerups/sensibility.png");
+	sens_off = Load::PNG("model/powerups/sensibility_off.png");
+
+	shield = &shield_on;
+	happy = &happy_on;
+	turbo = &turbo_on;
+	rev = &rev_on;
+	sens = &sens_on;
+
 }
 
 void HUD::Update()
 {
+	// updating the powerup textures
+	if (player->shield)				shield = &shield_on;	else shield = &shield_off;
+	if (player->happyWheel)			happy = &happy_on;		else happy= &happy_off;
+	if (player->turbo)				turbo = &turbo_on;		else turbo = &turbo_off;
+	if (player->reverseControls)	rev = &rev_on;			else rev = &rev_off;
+	if (player->sensibility)		sens = &sens_on;		else sens = &sens_off;
+
 	// building Speed texture
 	{
 		int s = player->Velocity();
@@ -242,6 +268,7 @@ void HUD::Render()
 		}
 		Shader::Pop();
 		if (showStopLight)
+			// draw stoplight
 		{
 			Shader::Bind(0, "tex", StopLight[lamp]);
 			Shader::Push();
@@ -256,6 +283,75 @@ void HUD::Render()
 			}
 			Shader::Pop();
 		}
+		// draw powerup 1 shield
+		Shader::Push();
+		{
+			Shader::Bind(0, "tex", *shield);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(-0.92f, 0.92f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.049f, 0.049f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+
+		// draw powerup 2 happy
+		Shader::Push();
+		{
+			Shader::Bind(0, "tex", *happy);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(-0.82f, 0.92f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.049f, 0.049f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+
+		// draw powerup 3 turbo
+		Shader::Push();
+		{
+			Shader::Bind(0, "tex", *turbo);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(-0.72f, 0.92f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.049f, 0.049f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+
+		// draw powerup 4 rev
+		Shader::Push();
+		{
+			Shader::Bind(0, "tex", *rev);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(-0.62f, 0.92f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.049f, 0.049f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
+
+		// draw powerup 5 sens
+		Shader::Push();
+		{
+			Shader::Bind(0, "tex", *sens);
+			Shader::Top() = glm::translate(Shader::Top(), glm::vec3(-0.52f, 0.92f, 0.1f));
+			Shader::Top() = glm::scale(Shader::Top(), glm::vec3(0.049f, 0.049f, 0.1f));
+			Shader::SetUniform("ProjectionMatrix", glm::mat4(1.0f));
+			Shader::SetUniform("ModelViewMatrix", Shader::Top());
+			glBindVertexArray(plane);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+		}
+		Shader::Pop();
 	}
 	Shader::Pop();
 	glEnable(GL_DEPTH_TEST);

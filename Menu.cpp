@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Play.h"
 #include "HighScoreScreen.h"
+#include "AboutScreen.h"
 
 #define NUMBEROFOPTIONS 5
 #define HELP 0
@@ -18,7 +19,7 @@ void Menu::Update()
 
 bool Menu::OnEnter()
 {
-	SOUND->Play(MUSICMENU, MusicVolume);
+	SOUND->Music(MUSICMENU, MusicVolume);
 	option = HELP;
 	texture[HELP] = Load::PNG(".\\model\\menu\\help.png");
 	texture[NEWGAME] = Load::PNG(".\\model\\menu\\race.png");
@@ -71,6 +72,60 @@ bool Menu::OnEnter()
 	return true;
 }
 
+void hideHelp(unsigned &option) {
+	SOUND->Play(BACKSOUND, SampleVolume);
+	option = NEWGAME;
+	SDL_Delay(250);
+}
+
+void scrollRight(unsigned &option) {
+	if (option < NUMBEROFOPTIONS)
+	{
+		SOUND->Play(SELECTSOUND, SampleVolume);
+		option++;
+		SDL_Delay(150);
+	}
+}
+
+void scrollLeft(unsigned &option) {
+	if (option > 1)
+	{
+		SOUND->Play(SELECTSOUND, SampleVolume);
+		option--;
+		SDL_Delay(150);
+	}
+}
+
+void showHelp(unsigned &option) {
+	SOUND->Play(ACCEPTSOUND, SampleVolume);
+	option = HELP;
+	SDL_Delay(150);
+}
+
+void selectOption(unsigned &option) {
+	SOUND->Play(ACCEPTSOUND, SampleVolume);
+	switch (option)
+	{
+	case NEWGAME: option = LOADING;
+		break;
+	case HIGHSCORES: SDL_Delay(150); Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
+		break;
+	case SETTINGS: std::cout << "Launching Settings\n";//Application::Instance()->GetStateMachine()->PushState(new Settings());
+		break;
+	case ABOUT: Application::Instance()->GetStateMachine()->PushState(new AboutScreen());
+		break;
+	case QUIT: {
+				   SOUND->PauseMusic();
+				   SOUND->Play(QUITSOUND, SampleVolume);
+				   //SCORE->Save();
+				   SDL_Delay(2500);
+				   Application::Instance()->Quit();
+	}
+	default:
+		break;
+	}
+}
+
 void Menu::HandleEvents()
 {
 	if (JOY->JoysticksInitialised())
@@ -78,72 +133,53 @@ void Menu::HandleEvents()
 		// when we are in the help menu, only button A works which switches to main menu
 		if (option == HELP)
 		{
-			if (JOY_A)
+			if (JOY_B)
 			{
-				SOUND->Play(BACKSOUND, SampleVolume);
-				option = NEWGAME;
-				SDL_Delay(250);
+				hideHelp(option);
 			}
 		}
 		else
-		// in main menu
-		// if we press RB we move cursor to the right
-		// if we press LB we move cursor to the left
+			// in main menu
+			// if we press RB we move cursor to the right
+			// if we press LB we move cursor to the left
 		{
 			if (JOY_RB)
 			{
-				if (option < NUMBEROFOPTIONS)
-				{
-					SOUND->Play(SELECTSOUND, SampleVolume);
-					option++;
-					SDL_Delay(150);
-				}
+				scrollRight(option);
 			}
 			if (JOY_LB)
 			{
-				if (option > 1)
-				{
-					SOUND->Play(SELECTSOUND, SampleVolume);
-					option--;
-					SDL_Delay(150);
-				}
+				scrollLeft(option);
 			}
 			// if we press Y we display the help again
-			if (JOY_Y) 
+			if (JOY_Y)
 			{
-				SOUND->Play(ACCEPTSOUND, SampleVolume);
-				option = HELP;
-				SDL_Delay(150);
+				showHelp(option);
 			}
 			// if we press A, we execute the selected option
 			if (JOY_A)
 			{
-				SOUND->Play(ACCEPTSOUND, SampleVolume);
-				switch (option)
-				{
-				case NEWGAME: option = LOADING;
-					break;
-				case HIGHSCORES: SDL_Delay(150); Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
-					break;
-				case SETTINGS: std::cout << "Launching Settings\n";//Application::Instance()->GetStateMachine()->PushState(new Settings());
-					break;
-				case ABOUT: std::cout << "Launching About\n";//Application::Instance()->GetStateMachine()->PushState(new About());
-					break;
-				case QUIT: {
-							   SOUND->Pause(MUSICMENU);
-							   SOUND->Play(QUITSOUND, SampleVolume);
-							   SDL_Delay(2100);
-							   Application::Instance()->Quit();
-				}
-				default:
-					break;
-				}
+				selectOption(option);
 			}
 		}
 	}
 	else
 	{
+		if (PRESSING(SDL_SCANCODE_ESCAPE)) {
+			hideHelp(option);
+		}
 
+		if (PRESSING(SDL_SCANCODE_LEFT))
+		{
+			scrollLeft(option);
+		}
+		if (PRESSING(SDL_SCANCODE_RIGHT))
+		{
+			scrollRight(option);
+		}
+		if (PRESSING(SDL_SCANCODE_RETURN)) {
+			selectOption(option);
+		}
 	}
 }
 
@@ -168,6 +204,8 @@ void Menu::Render()
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	Shader::Use(Shader::ScreenHUD());
+	// make sure that there`s no transparency in the menu
+	Shader::SetUniform("alfa", 1.0f);
 	Shader::Push(Shader::Identity());
 	{
 		Shader::Bind(0, "tex", texture[option]);
