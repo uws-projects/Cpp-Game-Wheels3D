@@ -106,6 +106,9 @@
       <Filter>Header Files\Tools</Filter>
     </ClInclude>
     <ClInclude Include="AboutScreen.h">
+      <Filter>Header Files\States</Filter>
+    </ClInclude>
+    <ClInclude Include="SettingsScreen.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -131,19 +134,10 @@
     <ClCompile Include="Play.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="rt3d.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="rt3dObjLoader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Wheel.cpp">
@@ -177,6 +171,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="AboutScreen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rt3dObjLoader.cpp">
+      <Filter>Header Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="rt3d.cpp">
+      <Filter>Header Files\Tools</Filter>
+    </ClCompile>
+    <ClCompile Include="StateMachine.cpp">
+      <Filter>Header Files\States</Filter>
+    </ClCompile>
+    <ClCompile Include="SettingsScreen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

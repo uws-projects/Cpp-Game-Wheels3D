@@ -99,12 +99,19 @@ void InputHandler::Clean()
 	}
 }
 
+bool once = true;
+
 void InputHandler::Update()
 {
 	m_keystate = SDL_GetKeyboardState(NULL);
 	SDL_Event event;
 	while (SDL_PollEvent(&event)) 
 	{
+		if (SDL_KEYDOWN)
+		{
+			key = SDL_GetKeyName(event.key.keysym.sym);
+		}
+
 		switch (event.type)
 		{
 		case SDL_QUIT:				Application::Instance()->Quit();break;
@@ -119,6 +126,7 @@ void InputHandler::Update()
 		default: break;
 		}
 	}
+	
 }
 
 void InputHandler::onJoystickAxisMove(SDL_Event& event)

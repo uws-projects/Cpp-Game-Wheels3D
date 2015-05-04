@@ -11,8 +11,9 @@ class Load
 {
 public:
 	Load();
-	static GLuint Text(const char * str);
-	static GLuint Load::Text(const char * str, bool withDigitsFont);
+	static GLuint Text(const char * str) { return Text(str, 255, 255, 255); }
+	static GLuint Text(const char * str, int r, int g, int b);
+	static GLuint Text(const char * str, bool withDigitsFont);
 	static GLuint CubeMap(const char *fname[6], GLuint *texID);
 	static GLuint BMP(char *fname);
 	static GLuint PNG(char *fname);

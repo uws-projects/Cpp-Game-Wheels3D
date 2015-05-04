@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-
-
 Camera::Camera()
 {
 }
@@ -19,16 +17,9 @@ void Camera::Update()
 	view = glm::lookAt(eye, at, up);
 }
 
-const float MOUSEHDEGREE = WIDTH / 180;		// value for 1 degree in pixels horizontally
-const float MOUSEVDEGREE = HEIGHT / 180;	// value for 1 degree in pixels vertically
-
-bool JoystickOff = true;
-
 void Camera::HandleEvents()
 {
 }
-
-
 
 void Camera::Render()
 {

@@ -236,7 +236,7 @@ void Clean()
 	Load::indices.clear();
 }
 
-GLuint Load::Text(const char * str) {
+GLuint Load::Text(const char * str, int r, int g, int b) {
 	if (TTF_Init() == -1)
 		std::cerr << "TTF failed to initialise.\n";
 
@@ -244,7 +244,7 @@ GLuint Load::Text(const char * str) {
 	if (font == NULL)
 		std::cerr << "Failed to open font.\n";
 
-	SDL_Color colour = { 255, 255, 255 };
+	SDL_Color colour = { r, g, b };
 	SDL_Color bg = { 0, 0, 0 };
 
 	SDL_Surface *stringImage;
@@ -346,8 +346,8 @@ GLuint Load::Text(const char * str, bool withDigitsFont) {
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
 	
-//	delete font;
-//	delete stringImage;
+	delete font;
+	delete stringImage;
 	return texture;
 }
 

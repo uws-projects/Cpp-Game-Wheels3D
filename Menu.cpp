@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "Play.h"
 #include "HighScoreScreen.h"
+#include "SettingsScreen.h"
 #include "AboutScreen.h"
 
 #define NUMBEROFOPTIONS 5
@@ -110,7 +111,7 @@ void selectOption(unsigned &option) {
 		break;
 	case HIGHSCORES: SDL_Delay(150); Application::Instance()->GetStateMachine()->PushState(new HighScoreScreen());
 		break;
-	case SETTINGS: std::cout << "Launching Settings\n";//Application::Instance()->GetStateMachine()->PushState(new Settings());
+	case SETTINGS: SDL_Delay(150); Application::Instance()->GetStateMachine()->PushState(new SettingsScreen());
 		break;
 	case ABOUT: Application::Instance()->GetStateMachine()->PushState(new AboutScreen());
 		break;

@@ -196,6 +196,7 @@ void HUD::Render()
 			glBindVertexArray(plane);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+			glDeleteTextures(1, &SpeedTexture);
 		}
 		Shader::Pop();
 
@@ -210,6 +211,7 @@ void HUD::Render()
 			glBindVertexArray(plane);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+			glDeleteTextures(1, &TimerTexture);
 		}
 		Shader::Pop();
 
@@ -224,6 +226,7 @@ void HUD::Render()
 			glBindVertexArray(plane);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+			glDeleteTextures(1, &GearTexture);
 		}
 		Shader::Pop();
 
@@ -265,6 +268,7 @@ void HUD::Render()
 			glBindVertexArray(plane);
 			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
+			glDeleteTextures(1, &DamageText);
 		}
 		Shader::Pop();
 		if (showStopLight)

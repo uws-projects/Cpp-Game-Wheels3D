@@ -26,8 +26,6 @@ void HighScoreScreen::Update()
 float x = -0.1f, y = 0.385f, distX = 0.0f, distY = 0.12f;
 float sx = 0.06f, sy = 0.04f;
 
-GLuint temp = Load::Text("testing");
-
 void HighScoreScreen::Render()
 {
 	Shader::Push(Shader::Identity());

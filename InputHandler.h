@@ -13,6 +13,10 @@
 #define PRESSING TheInputHandler::Instance()->IsKeyPressed
 #endif
 
+#ifndef CURRENTKEY
+#define CURRENTKEY TheInputHandler::Instance()->Key()
+#endif
+
 #ifndef Input
 #define Input TheInputHandler::Instance()
 #endif
@@ -128,6 +132,7 @@ public:
 	int RightY() { return (int) clampToPercentage(rightStickY); }
 	int LeftTrigger() { return (int)leftTrigger; }
 	int RightTrigger() { return (int)rightTrigger; }
+	const char* Key() { return key; }
 
 private:
 	static InputHandler* s_pInstance;
@@ -173,6 +178,8 @@ private:
 	float trigger;
 	float leftTrigger;
 	float rightTrigger;
+	const char* key;
+	const char* current;
 
 };
 
