@@ -36,9 +36,9 @@ public:
 	void Reset();
 	void Save();
 	void AddScore(float score, string name);
+	static string miliToDigit(int startTime);
 
 private:
-	static string miliToDigit(int startTime);
 	static void load();
 	static void formatData();
 	static highscore player[10], temp;

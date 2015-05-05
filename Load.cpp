@@ -346,8 +346,6 @@ GLuint Load::Text(const char * str, bool withDigitsFont) {
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
 	
-	delete font;
-	delete stringImage;
 	return texture;
 }
 
