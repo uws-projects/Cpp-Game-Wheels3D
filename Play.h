@@ -13,7 +13,7 @@ struct music {
 	bool playing;
 
 	music() { length = 0; playing = false; }
-	music(int l, bool p) { length: l; playing: p; }
+//	music(int l, bool p) { length: l; playing: p; }
 };
 
 class Play :

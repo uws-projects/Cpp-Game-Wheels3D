@@ -15,7 +15,7 @@ public:
 	void HandleEvents();
 
 	bool OnEnter();
-	bool OnExit() { SOUND->PauseMusic(); SOUND->Music(MUSICMENU, MusicVolume); return true; }
+	bool OnExit() { SOUND->PauseMusic(); SOUND->Music(MUSICMENU, VALUES->settings[Volume_Music]); return true; }
 
 private:
 

@@ -20,7 +20,7 @@ void Menu::Update()
 
 bool Menu::OnEnter()
 {
-	SOUND->Music(MUSICMENU, MusicVolume);
+	SOUND->Music(MUSICMENU, VALUES->settings[Volume_Music]);
 	option = HELP;
 	texture[HELP] = Load::PNG(".\\model\\menu\\help.png");
 	texture[NEWGAME] = Load::PNG(".\\model\\menu\\race.png");
@@ -74,7 +74,7 @@ bool Menu::OnEnter()
 }
 
 void hideHelp(unsigned &option) {
-	SOUND->Play(BACKSOUND, SampleVolume);
+	SOUND->Play(BACKSOUND, VALUES->settings[Volume_Sound_Effects]);
 	option = NEWGAME;
 	SDL_Delay(250);
 }
@@ -82,7 +82,7 @@ void hideHelp(unsigned &option) {
 void scrollRight(unsigned &option) {
 	if (option < NUMBEROFOPTIONS)
 	{
-		SOUND->Play(SELECTSOUND, SampleVolume);
+		SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 		option++;
 		SDL_Delay(150);
 	}
@@ -91,20 +91,20 @@ void scrollRight(unsigned &option) {
 void scrollLeft(unsigned &option) {
 	if (option > 1)
 	{
-		SOUND->Play(SELECTSOUND, SampleVolume);
+		SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 		option--;
 		SDL_Delay(150);
 	}
 }
 
 void showHelp(unsigned &option) {
-	SOUND->Play(ACCEPTSOUND, SampleVolume);
+	SOUND->Play(ACCEPTSOUND, VALUES->settings[Volume_Sound_Effects]);
 	option = HELP;
 	SDL_Delay(150);
 }
 
 void selectOption(unsigned &option) {
-	SOUND->Play(ACCEPTSOUND, SampleVolume);
+	SOUND->Play(ACCEPTSOUND, VALUES->settings[Volume_Sound_Effects]);
 	switch (option)
 	{
 	case NEWGAME: option = LOADING;
@@ -117,7 +117,7 @@ void selectOption(unsigned &option) {
 		break;
 	case QUIT: {
 				   SOUND->PauseMusic();
-				   SOUND->Play(QUITSOUND, SampleVolume);
+				   SOUND->Play(QUITSOUND, VALUES->settings[Volume_Sound_Effects]);
 				   //SCORE->Save();
 				   SDL_Delay(2500);
 				   Application::Instance()->Quit();

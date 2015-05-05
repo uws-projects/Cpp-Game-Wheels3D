@@ -133,6 +133,7 @@ public:
 	int LeftTrigger() { return (int)leftTrigger; }
 	int RightTrigger() { return (int)rightTrigger; }
 	const char* Key() { return key; }
+	int LeftAxisY() { return leftStickY; }
 
 private:
 	static InputHandler* s_pInstance;

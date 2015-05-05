@@ -287,6 +287,7 @@ GLuint Load::Text(const char * str, int r, int g, int b) {
 	// SDL surface was used to generate the texture but is no longer
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
+	TTF_CloseFont(font);
 	return texture;
 }
 
@@ -345,7 +346,7 @@ GLuint Load::Text(const char * str, bool withDigitsFont) {
 	// SDL surface was used to generate the texture but is no longer
 	// required. Release it to free memory
 	SDL_FreeSurface(stringImage);
-	
+	TTF_CloseFont(font);
 	return texture;
 }
 

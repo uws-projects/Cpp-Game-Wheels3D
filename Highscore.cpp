@@ -89,7 +89,7 @@ void Highscore::formatData()
 	}
 }
 
-void Highscore::AddScore(float score, string name)
+void Highscore::AddScore(int score, string name)
 {
 	int i = 0, j = 9;
 	while (i < 10)

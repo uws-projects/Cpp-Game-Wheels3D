@@ -63,7 +63,7 @@ void HUD::Update()
 
 	// building Speed texture
 	{
-		int s = player->Velocity();
+		int s = (int) player->Velocity();
 		text = std::to_string(abs(s));
 		SpeedTexture = Load::Text(text.c_str());
 	}
@@ -76,10 +76,10 @@ void HUD::Update()
 	DamageText = Load::Text(text.c_str());
 	}
 
-	float now = SDL_GetTicks();
+	int now = SDL_GetTicks();
 	// building Timer texture
 	{
-		double t = player->StartTimer();
+		unsigned t = player->StartTimer();
 		if (t != 0)	// if the race has started, so time elapsed is not 0
 		{
 			if (showStopLight == false)
@@ -96,7 +96,7 @@ void HUD::Update()
 			}
 
 			// get the time difference in milliseconds 
-			double startTime = SDL_GetTicks() - t;// ;
+			int startTime = SDL_GetTicks() - t;// ;
 			if (startTime > 0)
 			{
 				// and format it to this 00:00:000

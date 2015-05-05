@@ -76,7 +76,7 @@ void Sound::Play(HSAMPLE &sound)
 	Play(sound, 1.0f, 1.0f);
 }
 
-void Sound::Play(HSAMPLE &sound, float volume, float pitch)
+void Sound::Play(HSAMPLE &sound, float volume, int pitch)
 {
 	HCHANNEL channels = BASS_SampleGetChannel(sound, FALSE);
 	BASS_ChannelSetAttribute(channels, BASS_ATTRIB_VOL, volume);

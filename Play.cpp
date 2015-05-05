@@ -58,7 +58,7 @@ bool Play::OnEnter()
 	
 	// set starting music
 	SOUND->PauseMusic();
-	SOUND->Music(MUSICSETUP, MusicVolume);
+	SOUND->Music(MUSICSETUP, VALUES->settings[Volume_Music]);
 	MusicSetup.playing = true;
 	musicTimer = SDL_GetTicks();
 
@@ -71,7 +71,7 @@ void Play::Update()
 	if (MusicSetup.playing) {
 		if (playTime> MusicSetup.length) {
 			MusicSetup.playing = false;
-			SOUND->Music(MUSICTITLE, MusicVolume);
+			SOUND->Music(MUSICTITLE, VALUES->settings[Volume_Music]);
 			musicTimer = SDL_GetTicks();
 			playTime = SDL_GetTicks() - musicTimer;
 			MusicTitle.playing = true; 
@@ -80,7 +80,7 @@ void Play::Update()
 	if (MusicTitle.playing) {
 		if (playTime > MusicTitle.length) {
 			MusicTitle.playing = false;
-			SOUND->Music(MUSICCREDITS, MusicVolume);
+			SOUND->Music(MUSICCREDITS, VALUES->settings[Volume_Music]);
 			musicTimer = SDL_GetTicks();
 			playTime = SDL_GetTicks() - musicTimer;
 			MusicCredits.playing = true;
@@ -89,7 +89,7 @@ void Play::Update()
 	if (MusicCredits.playing) {
 		if (playTime > MusicCredits.length) {
 			MusicCredits.playing = false;
-			SOUND->Music(MUSICSCOREBOARD, MusicVolume);
+			SOUND->Music(MUSICSCOREBOARD, VALUES->settings[Volume_Music]);
 			musicTimer = SDL_GetTicks();
 			playTime = SDL_GetTicks() - musicTimer;
 			MusicScoreboard.playing = true;
@@ -98,7 +98,7 @@ void Play::Update()
 	if (MusicScoreboard.playing) {
 		if (playTime > MusicScoreboard.length) {
 			MusicTitle.playing = false;
-			SOUND->Music(MUSICSETUP, MusicVolume);
+			SOUND->Music(MUSICSETUP, VALUES->settings[Volume_Music]);
 			musicTimer = SDL_GetTicks();
 			playTime = SDL_GetTicks() - musicTimer;
 			MusicSetup.playing = true;
@@ -121,15 +121,6 @@ void Play::HandleEvents()
 	}
 
 	if (PRESSING(SDL_SCANCODE_ESCAPE))			Application::Instance()->Quit();
-
-	if (PRESSING(SDL_SCANCODE_1)) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		glDisable(GL_CULL_FACE);
-	}
-	if (PRESSING(SDL_SCANCODE_2)) {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		glEnable(GL_CULL_FACE);
-	}
 }
 
 void Play::Render()

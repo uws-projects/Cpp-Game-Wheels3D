@@ -43,8 +43,8 @@ private:
 	glm::vec3 position;
 	glm::vec3 scale;
 	float rotationSpeed = 0.0f;
-	float alarm;
-	float timer;
+	unsigned alarm;
+	int timer;
 	int type;
 	bool visible;
 };

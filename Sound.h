@@ -42,9 +42,9 @@ public:
 	void Play(HSAMPLE &sound);
 	void Play(int soundNumber) { Play(soundList[soundNumber]); }
 	void Play(int soundNumber, float volume) { Play(soundList[soundNumber], volume); }
-	void Play(int soundNumber, float volume, float pitch) { Play(soundList[soundNumber], volume, pitch); }
+	void Play(int soundNumber, float volume, int pitch) { Play(soundList[soundNumber], volume, pitch); }
 	void Play(HSAMPLE &sound, float volume);
-	void Play(HSAMPLE &sound, float volume, float pitch);
+	void Play(HSAMPLE &sound, float volume, int pitch);
 	void Music(int soundNumber, float volume) { currentMusic = musicList[soundNumber]; Play(currentMusic, volume); }
 	void Pause(HSAMPLE &sound);
 	void Pause(int soundNUmber) { Pause(soundList[soundNUmber]); }

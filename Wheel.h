@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Sound.h"
 #include <vector>
+#include "settings.h"
 
 #define KG 1.0f
 #define S 0.01666666666f
@@ -35,7 +36,7 @@ public:
 	unsigned int &Index()	{ return indexCount; };
 	float Radius()			{ return RADIUS; }
 	float& Velocity()		{ return velocity; }
-	double& StartTimer()	{ return startTime; }
+	int& StartTimer()		{ return startTime; }
 	int& Gear()				{ return currentGear; }
 	
 	void AddLeftDamage()				{ leftDamage += damageAmount; }
@@ -45,24 +46,26 @@ public:
 	void DetachControl()				{ currentGear = NEUTRAL; canRace = false; }
 	void FinishRace()					{ raceComplete = true; }
 	bool IsRaceFinished()				{ return raceComplete; }
-	void SetFinalTime(float result)		{ finalTime = result; }
-	float RaceResult()					{ return finalTime; }
+	void SetFinalTime(int result)		{ finalTime = result; }
+	int RaceResult()					{ return finalTime; }
 	int &GetLeftLevel()					{ return leftDamageLevel; }
 	int &GetRightLevel()				{ return rightDamageLevel; }
 	int GetDamage()						{ return (int)damage; }
 	int &GetGearStatus()				{ return gearStatus; }
-	void ApplySensibility()				{ damageAmount = 0.3f;			SOUND->Sensibility(SampleVolume); sensibility = true; }
-	void ApplyHappyWheel()				{ boostTurn = 2.0f;				SOUND->Happy(SampleVolume); happyWheel = true; }
-	void ApplyInstantStop()				{ velocity = 0.0f;				SOUND->Stop(SampleVolume); }
-	void ApplyRepair()					{ leftDamage = rightDamage = 0; SOUND->Repair(SampleVolume); }
-	void ApplyReverseControls()			{ reverseControls = true;		SOUND->Reverse(SampleVolume); }
-	void ApplyShield()					{ damageAmount = 0;	velocityPenalty = 1.0f;	SOUND->Shield(SampleVolume); shield = true; }
-	void ApplyTurbo()					{ boostTurbo = 2.0f;			SOUND->Turbo(SampleVolume); turbo = true; }
+	void ApplySensibility()				{ damageAmount = VALUES->settings[Effect_Sensibility];	SOUND->Sensibility(VALUES->settings[Volume_Sound_Effects]); sensibility = true; }
+	void ApplyHappyWheel()				{ boostTurn = VALUES->settings[Effect_Cornering];		SOUND->Happy(VALUES->settings[Volume_Sound_Effects]); happyWheel = true; }
+	void ApplyInstantStop()				{ velocity = 0.0f;										SOUND->Stop(VALUES->settings[Volume_Sound_Effects]); }
+	void ApplyRepair()					{ leftDamage = rightDamage = 0;							SOUND->Repair(VALUES->settings[Volume_Sound_Effects]); }
+	void ApplyReverseControls()			{ reverseControls = true;								SOUND->Reverse(VALUES->settings[Volume_Sound_Effects]); }
+	void ApplyShield()					{ damageAmount = 0;	velocityPenalty = 1.0f;				SOUND->Shield(VALUES->settings[Volume_Sound_Effects]); shield = true; }
+	void ApplyTurbo()					{ boostTurbo = VALUES->settings[Effect_Turbo];			SOUND->Turbo(VALUES->settings[Volume_Sound_Effects]); turbo = true; }
 
-	void UndoSensibility()		{ damageAmount = 0.05f; sensibility = false; }
+	void UndoSensibility()		{ damageAmount = VALUES->settings[Effect_Damage]; sensibility = false; }
 	void UndoHappyWheel()		{ boostTurn = 1.0f; happyWheel = false; }
 	void UndoReverseControls()	{ reverseControls = false; }
-	void UndoShield()			{ damageAmount = 0.05f; velocityPenalty = 0.95; shield = false; }
+	void UndoShield()			{ damageAmount = VALUES->settings[Effect_Damage]; 
+									velocityPenalty = VALUES->settings[Effect_Collision_Tolerance]; 
+									shield = false; }
 	void UndoTurbo()			{ boostTurbo = 1.0f; turbo = false; }
 
 	~Wheel();
@@ -108,7 +111,7 @@ private:
 	float F_rr;					// rolling resistance force
 	float u;					// car heading
 
-	float Trigger;
+	int Trigger;
 	float rotationAngle;
 	float velocity;				// Velocity
 	float Acceleration;			// Acceleration
@@ -137,14 +140,14 @@ private:
 	bool hugeZoom;
 	float zoomAmount;
 
-	double startTime;
+	int startTime;
 
 	int gearStatus;
 	bool canGearUp;
 	bool canGearDown;
 	bool detachedCamera;			// used when passing the finish line
 	bool raceComplete;				// used to stop updating timer
-	float finalTime;				// result of the race
+	int finalTime;				// result of the race
 
 	void initializePhysics();
 	void updatePhysics();

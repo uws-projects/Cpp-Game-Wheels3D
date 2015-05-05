@@ -1,4 +1,5 @@
 #include "Powerup.h"
+#include "settings.h"
 
 void Powerup::Initialize()
 {
@@ -7,8 +8,8 @@ void Powerup::Initialize()
 	indexCount = Load::meshCount();
 	scale = glm::vec3(0.18f);
 	visible = true;
-	timer = 0.0f;
-	alarm = 0.0f;
+	timer = 0;
+	alarm = 0;
 
 }
 
@@ -57,11 +58,11 @@ void Powerup::Update()
 		visible = false;
 		switch (type)
 		{
-		case SENSIBILITY:		wheel->ApplySensibility();		alarm = 10000; break;
-		case HAPPYWHEEL:		wheel->ApplyHappyWheel();		alarm = 10000; break;
-		case TURBO:				wheel->ApplyTurbo();			alarm = 3000; break;
-		case SHIELD:			wheel->ApplyShield();			alarm = 5000; break;
-		case REVERSECONTROLS:	wheel->ApplyReverseControls();	alarm = 3000; break;
+		case SENSIBILITY:		wheel->ApplySensibility();		alarm = (int) VALUES->settings[Duration_Sensibility]; break;
+		case HAPPYWHEEL:		wheel->ApplyHappyWheel();		alarm = (int) VALUES->settings[Duration_HappyWheel]; break;
+		case TURBO:				wheel->ApplyTurbo();			alarm = (int) VALUES->settings[Duration_Turbo]; break;
+		case SHIELD:			wheel->ApplyShield();			alarm = (int) VALUES->settings[Duration_Shield]; break;
+		case REVERSECONTROLS:	wheel->ApplyReverseControls();	alarm = (int) VALUES->settings[Duration_Reverse_Controls]; break;
 		case REPAIR:			wheel->ApplyRepair();			alarm = 10000; break;
 		case INSTANTSTOP:		wheel->ApplyInstantStop();		alarm = 10000; break;
 			

@@ -5,7 +5,7 @@
 bool HighScoreScreen::OnEnter()
 {
 	SOUND->PauseMusic();
-	SOUND->Music(MUSICHIGHSCORE, MusicVolume);
+	SOUND->Music(MUSICHIGHSCORE, VALUES->settings[Volume_Music]);
 	texture = Load::PNG(".\\model\\menu\\HighscoreMenu.png");
 	model = Load::Obj(".\\model\\cubeModel.obj");
 	indexCount = Load::meshCount();
@@ -97,7 +97,7 @@ void HighScoreScreen::HandleEvents()
 	{
 		if (JOY_B || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			SDL_Delay(100);
 			Application::Instance()->GetStateMachine()->PopState();
 		}
@@ -115,7 +115,7 @@ void HighScoreScreen::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			Application::Instance()->GetStateMachine()->PopState();
 		}
 	}

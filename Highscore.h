@@ -10,7 +10,7 @@ using namespace std;
 struct highscore {
 	string playerNames;
 	string stringScore;
-	float playerScore;
+	int playerScore;
 };
 
 class Highscore
@@ -35,7 +35,7 @@ public:
 	string GetScore(int id) { return player[id].stringScore; }
 	void Reset();
 	void Save();
-	void AddScore(float score, string name);
+	void AddScore(int score, string name);
 	static string miliToDigit(int startTime);
 
 private:

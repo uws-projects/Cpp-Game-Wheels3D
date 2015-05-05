@@ -4,7 +4,7 @@
 bool AboutScreen::OnEnter()
 {
 	SOUND->PauseMusic();
-	SOUND->Music(MUSICCREDITS, MusicVolume);
+	SOUND->Music(MUSICCREDITS, VALUES->settings[Volume_Music]);
 	texture = Load::PNG(".\\model\\menu\\AboutMenu.png");
 	model = Load::Obj(".\\model\\cubeModel.obj");
 	indexCount = Load::meshCount();
@@ -55,7 +55,7 @@ void AboutScreen::HandleEvents()
 	{
 		if (JOY_B || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			SDL_Delay(100);
 			Application::Instance()->GetStateMachine()->PopState();
 		}
@@ -66,7 +66,7 @@ void AboutScreen::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			Application::Instance()->GetStateMachine()->PopState();
 		}
 	}

@@ -102,7 +102,7 @@ void Logo::HandleEvents()
 	{
 		if (JOY_A || JOY_START || PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
 			SDL_Delay(100);
@@ -113,7 +113,7 @@ void Logo::HandleEvents()
 	{
 		if (PRESSING(SDL_SCANCODE_ESCAPE))
 		{
-			SOUND->Play(SELECTSOUND, SampleVolume);
+			SOUND->Play(SELECTSOUND, VALUES->settings[Volume_Sound_Effects]);
 			Shader::SetUniform("alfa", 1.0f);
 			Application::Instance()->GetStateMachine()->PushState(new Menu());
 		}

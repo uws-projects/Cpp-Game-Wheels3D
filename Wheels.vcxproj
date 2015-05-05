@@ -126,6 +126,7 @@
     <ClCompile Include="Powerup.cpp" />
     <ClCompile Include="rt3d.cpp" />
     <ClCompile Include="rt3dObjLoader.cpp" />
+    <ClCompile Include="Settings.cpp" />
     <ClCompile Include="SettingsScreen.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Skybox.cpp" />

@@ -68,7 +68,7 @@ void Wheel::Initialize()
 	raceTrack = new Track(this);
 	raceTrack->Initialize();
 	raceComplete = false;
-	finalTime = 0.0f;
+	finalTime = 0;
 
 	initializePhysics();
 
@@ -212,7 +212,7 @@ void Wheel::initializePhysics()
 	u = 1.0f;
 	// Initialize Engine Power and joystick trigger value
 	EnginePower = 0;
-	Trigger = 0.0f; 
+	Trigger = 0; 
 
 	// Set gear ratios
 	gears[0] = 0.00f;
@@ -268,7 +268,7 @@ void Wheel::updatePhysics()
 					F_traction = u * EnginePower * gears[currentGear] * 0.01f * (100 - damage);
 					F_long = F_traction + F_drag + F_rr;
 				}
-				SOUND->Play(ENGINELOOP, EngineVolume, (1000 + 5000 * abs(velocity)));
+				SOUND->Play(ENGINELOOP, VALUES->settings[Volume_Engine] , (1000 + 5000 * (int) abs(velocity)));
 	}
 		break;
 	case 0:	// neutral case
@@ -285,7 +285,7 @@ void Wheel::updatePhysics()
 				{
 					F_long = F_drag + F_rr;
 				}
-				SOUND->Play(ENGINELOOP, EngineVolume, 1000 * abs(EnginePower));
+				SOUND->Play(ENGINELOOP, VALUES->settings[Volume_Engine], 1000 * abs(EnginePower));
 	}
 		break;
 	default: // regular gear
@@ -305,7 +305,7 @@ void Wheel::updatePhysics()
 					 F_long = F_traction + F_drag + F_rr;
 				 }
 				 // play sound at volume 0.01, with a freq multiplier of 2000 
-				 SOUND->Play(ENGINELOOP, EngineVolume, (1000 + 5000 * abs(velocity)));
+				 SOUND->Play(ENGINELOOP, VALUES->settings[Volume_Engine], (1000 + 5000 * (int) abs(velocity)));
 	}
 		break;
 	}
@@ -319,24 +319,24 @@ void Wheel::updatePhysics()
 	//std::cout << "\nEngine Power: " << EnginePower;
 	//std::cout << "\nGear: " << currentGear << " velocity : " << velocity;
 }
+int now;
 
 void Wheel::HandleEvents()
 {
-
+	std::cout << "\nRaceStarted:" << raceStarted << "\tcanControl: " << canControl << "\tcanGearUp" << canGearUp;
 	if (!raceStarted)
 	{
 		if (cameraHeight > position.y * 2.5f)
 		{
 			cameraHeight -= 0.3f;
 			float test = (200.0f - cameraHeight) / 10000.0f;
-			if (test > EngineVolume) test = EngineVolume;
-			SOUND->Play(ENGINELOOP, test, 44100 + 600.0f * abs(EnginePower));
+			if (test > VALUES->settings[Volume_Engine]) test = VALUES->settings[Volume_Engine];
+			SOUND->Play(ENGINELOOP, test, 44100 + 600 * abs(EnginePower));
 			canGearUp = false;
 		}
 		else
 		{
 			raceStarted = true;
-			canControl = true;
 		}
 		if (raceStarted && !raceComplete) {
 			startTime = SDL_GetTicks() + 3000;	
@@ -344,7 +344,9 @@ void Wheel::HandleEvents()
 	}
 	else
 	{
-		if (SDL_GetTicks() - startTime > 0) canRace = true;
+		int now = SDL_GetTicks();
+		if (now - startTime > 0) { canControl = true; }
+		std::cout << "\nNow: " << now << "startTime: " << startTime << "delta: " << (now-startTime) << "\tcan Control" << canControl;
 		if (JOY->JoysticksInitialised())
 		{
 
@@ -357,10 +359,10 @@ void Wheel::HandleEvents()
 			*  and left trigger returns positive values, but we want to
 			*  use the commands inverted (RT gas LT brake) so we multiply by -1
 			*/
-			Trigger = JOY->zValue(JOYSTICK1)*-1;
+			Trigger = (int) (JOY->zValue(JOYSTICK1))*-1;
 
 			// transform joystick axis in percentage values from -100 to 100
-			EnginePower = (Trigger / 32765) * 100;
+			EnginePower = (int) ((Trigger / 32765.0f) * 100);
 
 			// value to reduce turning at high speeds
 
@@ -373,7 +375,7 @@ void Wheel::HandleEvents()
 			}
 
 			// gear up on release of RB
-			if (canGearUp && canRace)
+			if (canGearUp && canControl)
 			{
 				if (JOY_RB) {
 					canGearUp = false;
@@ -382,7 +384,7 @@ void Wheel::HandleEvents()
 			}
 
 			// gear down on release of LB
-			if (canGearDown && canRace)
+			if (canGearDown && canControl)
 			{
 				if (JOY_LB) {
 					if (reverseControls) gearUp(); else gearDown();
